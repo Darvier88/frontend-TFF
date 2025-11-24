@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-11-20 18:12:36",
+  "tiempo_total": "5m57s",
+  "total_tweets": 100,
+  "exitosos": 100,
+  "errores": 0,
+  "distribucion": {
+    "no": 82,
+    "low": 6,
+    "mid": 9,
+    "high": 3
+  },
+  "labels": {
+    "political_sensitivity": 5,
+    "toxic": 13,
+    "legal_privacy": 2,
+    "hate": 1
+  }
+}

@@ -1,0 +1,661 @@
+{
+  "resultados": [
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y referencia a pecados sin insultos directos",
+      "spans": [
+        {
+          "text": "mis pecados también son muy graves",
+          "start": 75,
+          "end": 106,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 16,
+      "text": "Igual yo supuestamente inventé el hate a Jujutsu, BnHa, Black Clover, Chainsaw Man, Frieren(?), Takopi, HxH y muchos más dependiendo del esquizofrénico al que le preguntes.\n\nAsí que mis pecados también son muy graves. Nos veremos en el infierno, Beelce. https://t.co/lepYAngj3F"
+    },
+    {
+      "labels": [
+        "political_sensitivity"
+      ],
+      "risk_level": "mid",
+      "rationale": "Comentario sobre figuras públicas con tono crítico, pero sin insultos directos ni deshumanización.",
+      "spans": [
+        {
+          "text": "Sus acciones y comentarios dañaron la reputación del mejor de todos los tiempos",
+          "start": 41,
+          "end": 89,
+          "label": "political_sensitivity"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 17,
+      "text": "Entre Beelce y Perico, efectivamente. Eso es una realidad absoluta.\n\nSus acciones y comentarios dañaron la reputación del mejor de todos los tiempos durante años, pero bueno hay que quererlos igual. https://t.co/cINEekzAfe https://t.co/IPvjc8itt0"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Pregunta despectiva sin insultos directos",
+      "spans": [
+        {
+          "text": "muerta",
+          "start": 24,
+          "end": 30,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 27,
+      "text": "@yoko777117 @Bardopacotilla Quién es la muerta?"
+    },
+    {
+      "labels": [
+        "political_sensitivity"
+      ],
+      "risk_level": "mid",
+      "rationale": "Crítica a la política de la empresa, pero sin extremismo ni desinformación clara",
+      "spans": [
+        {
+          "text": "CEO de Twitch",
+          "start": 16,
+          "end": 27
+        },
+        {
+          "text": "más de la mitad del dinero",
+          "start": 56,
+          "end": 82
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 33,
+      "text": "\"Escucha bien, CEO de Twitch. Este grito viene de todas tus creaciones abandonadas...\n\nEn 2022, vi como por cada suscripción vuestra empresa se llevaba más de la mitad del dinero de los donantes. Presencié como la gente compraba bits para apoyarme aún sabiendo que un gran https://t.co/6OdI6uUp2f"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y humor en el contexto",
+      "spans": [
+        {
+          "text": "reciben mucho hate",
+          "start": 56,
+          "end": 73,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 36,
+      "text": "Dominik es como Boruto.\n\nHijo de Naruto (Rey Misterio), pero prefiere ser como Sasuke (Eddie Guerrero).\n\nY los dos reciben mucho hate jajaja https://t.co/XQt6U3IvNM"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Cita y sarcasmo evidente, no hay insultos directos",
+      "spans": [
+        {
+          "text": "pienso que eres hermosa",
+          "start": 48,
+          "end": 70,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 40,
+      "text": "RT @TheDarkraimola: \"La verdadera razón por la que acabé siendo de esta manera fue...\n\nPorque pienso que eres hermosa. Eso es todo...\"\n\n✍️🔥…"
+    },
+    {
+      "labels": [
+        "political_sensitivity"
+      ],
+      "risk_level": "mid",
+      "rationale": "Comentario sobre eventos en plataformas de streaming con tono de desilusión, pero sin extremismo evidente.",
+      "spans": [
+        {
+          "text": "Ya no importa nada.",
+          "start": 34,
+          "end": 50,
+          "label": "political_sensitivity"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 54,
+      "text": "En Kick retransmitieron la muerte de una persona y en Twitch el nacimiento de otra.\n\nYa no importa nada. https://t.co/1n2L6U7ZpS"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Comentario sarcástico sin insultos directos",
+      "spans": [
+        {
+          "text": "vigilarme entre minita y minita",
+          "start": 34,
+          "end": 63,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 59,
+      "text": "@soymatt_ Tienes tiempo para vigilarme entre minita y minita?"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "El comentario refleja una opinión personal sin insultos directos ni deshumanización.",
+      "spans": [
+        {
+          "text": "tirándome hate",
+          "start": 54,
+          "end": 69,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 60,
+      "text": "@OneEyedGuille @Jamke0820 @CarlitoBurner77 Pero que piensen de mí lo que quieran, nunca fue mi intención caerle bien a todo el mundo ni mucho menos a los fans de las obras que critico.\n\nEl problema es que me pareció  surrealista que tras TODOS esos comentarios tirándome hate, aún así quisieran dejarme mal diciendo que no"
+    },
+    {
+      "labels": [
+        "toxic",
+        "bullying"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insulto y acoso persistente, pero con sarcasmo evidente",
+      "spans": [
+        {
+          "text": "insultarme una vez, dos, tres...pero decenas?",
+          "start": 20,
+          "end": 56,
+          "label": "toxic"
+        },
+        {
+          "text": "estoy resentido por 20 xd",
+          "start": 104,
+          "end": 126,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 61,
+      "text": "@Jamke0820 @OneEyedGuille @CarlitoBurner77 Hombre, está bien insultarme una vez, dos, tres...pero decenas?\n\nLo que me llamó la atención aquí fue la cantidad jajaja \n\nEso y que me acusaban de estar resentido por un comentario. Y no, yo estoy resentido por 20 xd"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insultos y sarcasmo evidente, pero no deshumanización ni ataques directos.",
+      "spans": [
+        {
+          "text": "insultar",
+          "start": 52,
+          "end": 59,
+          "label": "toxic"
+        },
+        {
+          "text": "ego fragil",
+          "start": 106,
+          "end": 117,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 69,
+      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Pues si we, porque te lo tomaste a mal y me empezaste a insultar xd\n\nPero bueno, culpa mía por hablar con alguien que desde el minuto 1 ya había dejado claro que yo le caía mal.\n\nMe vas a acusar de tener el ego fragil otra vez o podemos dejarlo aquí? https://t.co/l2IkYqrejR"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Crítica personal sin insultos directos ni lenguaje denigrante",
+      "spans": [
+        {
+          "text": "hater",
+          "start": 90,
+          "end": 95,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 70,
+      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 1. Veo a un tipo diciendo que no le gusta mi contenido.\n\n2. Entro a su perfil a ver si descubro el porqué (Suelo hacerlo cuando veo críticas contra mi o mi canal, ya que  si el \"hater\" en cuestión es fan de BnHa/Jujutsu/BC, etc. pues ya entiendo cuál es el problema conmigo."
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo evidente y no hay insultos directos",
+      "spans": [
+        {
+          "text": "FUESE TAN OBVIO",
+          "start": 56,
+          "end": 71,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 71,
+      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Y porque a mí me hizo gracia que el motivo de que te cayese mal FUESE TAN OBVIO xD: https://t.co/YQ3nMaj5SJ"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y no hay insultos directos graves.",
+      "spans": [
+        {
+          "text": "insultaste",
+          "start": 49,
+          "end": 59,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 74,
+      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Me lo tomé en serio cuando después de señalar lo curiosa que me parecía tu foto...ME INSULTASTE A MÍ Y A ZROLY xD\n\nFuiste tú el que se lo tomó en serio. Pero ya está, déjalo."
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Expresión de opiniones personales sin insultos directos",
+      "spans": [
+        {
+          "text": "gente a la que no le caigo bien",
+          "start": 56,
+          "end": 34,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 75,
+      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Que no fue porque me doliese xdd \n\nYa te dije que fue porque me hizo gracia. He conocido gente a la que no le caigo bien porque son fans de BnHa, gente a la que no le caigo bien por mis opiniones de Jujutsu, gente que me odia por lo que dije de Black Clover...\n\nY TÚ LOS TENIAS A"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Defensa personal ante un insulto, sin lenguaje denigrante severo",
+      "spans": [
+        {
+          "text": "grano de arena",
+          "start": 24,
+          "end": 37,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 76,
+      "text": "@Paolo1276789500 @si6568723994531 Ni tú eres un grano de arena ni yo soy más de uno. Somos seres humanos, los dos. \n\nY por eso si veo un comentario tuyo que me llama la atención, puedo responderte. Y si me insultas, es lógico que me defienda. \n\nNo hay nada de raro en eso."
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insulto indirecto y lenguaje despectivo hacia una persona específica.",
+      "spans": [
+        {
+          "text": "papeador",
+          "start": 90,
+          "end": 98,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 79,
+      "text": "@Paolo1276789500 @si6568723994531 Claro porque si me insultas, como hace el otro tipo, me tengo que quedar callado. Es lo que tenemos que hacer los youtubers, es verdad.\n\nNo tenemos derecho a defendernos porque si lo hacemos estamos mostrando que \"nos dañaron el ego\".\n\nTú ganas Paolo, eres todo un papeador."
+    },
+    {
+      "labels": [
+        "political_sensitivity"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y crítica política sin ataques directos",
+      "spans": [
+        {
+          "text": "Todo tiene su público",
+          "start": 0,
+          "end": 20,
+          "label": "political_sensitivity"
+        },
+        {
+          "text": "critiqué a los que tiene en la portada",
+          "start": 36,
+          "end": 70,
+          "label": "political_sensitivity"
+        },
+        {
+          "text": "opinión política o por mi gusto musical",
+          "start": 78,
+          "end": 113,
+          "label": "political_sensitivity"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 80,
+      "text": "@si6568723994531 Todo tiene su público. Y bueno, sí, dale, SEGURO que no está enfadado conmigo por alguna vez de las que critiqué a los que tiene en la portada xD\n\nSeguro que es por mi opinión política o por mi gusto musical jajaja"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insulto y sarcasmo evidente en el contexto de la discusión",
+      "spans": [
+        {
+          "text": "insultar",
+          "start": 60,
+          "end": 67,
+          "label": "toxic"
+        },
+        {
+          "text": "ofendido",
+          "start": 117,
+          "end": 125,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 82,
+      "text": "@Paolo1276789500 @si6568723994531 Yo solo usé tu portada para apuntar a qué con razón no te gustaba mi contenido. Tú fuiste el primero insultar [a mí y a Zroly, por algún motivo jajaja]\n\nNo quiero disculpas ni nada, pero tampoco te hagas tú el ofendido, que la discusión la iniciaste tú jajaja"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Crítica a contenido sin insultos directos ni deshumanización",
+      "spans": [
+        {
+          "text": "hatea los spaghettis y las hamburguesas",
+          "start": 70,
+          "end": 104,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 83,
+      "text": "@si6568723994531 Truvix si tú comida favorita son los spaghettis y las hamburguesas, es lógico que el youtuber que hatea los spaghettis y las hamburguesas no te guste.\n\nEs el caso de Paolo, que anda criticando mi contenido cuando mi contenido se basa en todo lo contrario de lo que (al parecer) le"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Cita y sarcasmo evidente, no hay insultos directos",
+      "spans": [
+        {
+          "text": "no te ESTABA insultando",
+          "start": 40,
+          "end": 62,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 86,
+      "text": "@si6568723994531 @Paolo1276789500 Si, tienes razón. La frase correcta ahí era \"yo no te ESTABA insultando\" y eso es cierto. Pero ya  que el se dio por atacado, pues que así sea 😵‍💫"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Uso de lenguaje despectivo hacia un grupo sin deshumanización explícita.",
+      "spans": [
+        {
+          "text": "puta madre",
+          "start": 56,
+          "end": 66,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 87,
+      "text": "@Jos42358656 @OneEyedGuille @LorenaRokuhira @CarlitoBurner77 Es muy posible. De los fandoms más \"resentidos\" con los que me he cruzado.\n\nMira que llevo meses sin decir nada del Deku y su puta madre y cada cierto tiempo salen a llorar. \n\nY, siendo honestos, con BnHa no me metí ni la mitad que con Jujutsu, One Piece, Chainsaw Man o Black"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insulto implícito a gustos personales",
+      "spans": [
+        {
+          "text": "putear a esas obras",
+          "start": 85,
+          "end": 105,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 88,
+      "text": "@Paolo1276789500 @si6568723994531 Yo no te estoy insultando ni criticando tus gustos (aunque sí, ya que lo dices, me parecen terribles). Sólo apuntaba que es normal que mi contenido que muchas veces se basa en putear a esas obras no sea de tu agrado. Lógico, no?"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y referencia a insultos previos sin lenguaje denigrante directo",
+      "spans": [
+        {
+          "text": "resentido",
+          "start": 66,
+          "end": 74,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 89,
+      "text": "@rodbeingshy @goge59472 @SamAnima07 Dejando de lado sus obsesiones, esto empezó porque me estaban llamando resentido por no querer ver sus vídeos (que encima mi compa resulta que es YouTuber de anime también, vaya huevos jajaja) porque \"me había insultado una vez\". \n\nY solo quería mostrar que fueron muchas más que"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Cita/sarcasmo evidente, no hay insultos directos",
+      "spans": [
+        {
+          "text": "obsesivo",
+          "start": 72,
+          "end": 80,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 90,
+      "text": "@goge59472 @rodbeingshy @SamAnima07 Yo no vine a decirle nada, sólo que tener 20 tweets insultándome (pese a tenerme bloqueado) es un poco obsesivo jajaja"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Uso de sarcasmo y comentarios despectivos sobre preferencias personales.",
+      "spans": [
+        {
+          "text": "las obras que más detesto",
+          "start": 39,
+          "end": 60,
+          "label": "toxic"
+        },
+        {
+          "text": "te faltó un Luffy o un Rudeus",
+          "start": 75,
+          "end": 102,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 91,
+      "text": "@Paolo1276789500 @si6568723994531 Hombre Paolo, con esa portada que me traes, está claro que mi contenido no es para ti xd\n\nPueden ser fácilmente las obras que más detesto, te faltó un Luffy o un Rudeus en vez del Tanjiro para rematar jajaja https://t.co/iJ1Tpt0GI7"
+    },
+    {
+      "labels": [
+        "toxic",
+        "bullying"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insultos y acoso persistente hacia otra persona",
+      "spans": [
+        {
+          "text": "maté a su abuela",
+          "start": 22,
+          "end": 40,
+          "label": "toxic"
+        },
+        {
+          "text": "20 tweets insultándome",
+          "start": 42,
+          "end": 63,
+          "label": "bullying"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 93,
+      "text": "@OneEyedGuille @LorenaRokuhira @CarlitoBurner77 En plan, ¿maté a su abuela o algo y no me di cuenta?\n\nTiene como 20 tweets insultándome y aún por encima me lo queréis victimizar jajaja https://t.co/rmhrRWyNlP"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Uso de sarcasmo y referencia a un insulto previo, pero no es un ataque directo.",
+      "spans": [
+        {
+          "text": "me llamase terrorista",
+          "start": 56,
+          "end": 74,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 94,
+      "text": "@OneEyedGuille @LorenaRokuhira @CarlitoBurner77 A ver, igual soy un poco resentido, no lo voy a negar. Pero está claro que vuestro amiguito tiene un pequeño problema conmigo.\n\nNo es que \"me llamase  terrorista\" una vez xd https://t.co/1RH7IbVzzZ"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo evidente y lenguaje no ofensivo",
+      "spans": [
+        {
+          "text": "lo pasé mal eh jajaja",
+          "start": 35,
+          "end": 50,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 100,
+      "text": "La parte de los espantapájaros del Silent Hill F...lo pasé mal eh jajaja"
+    }
+  ]
+}

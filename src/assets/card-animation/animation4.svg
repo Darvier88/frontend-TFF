@@ -1,0 +1,61 @@
+<svg width="448" height="205" viewBox="0 0 448 205" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_18_5065)">
+<rect x="98" width="252" height="61.3125" rx="6.75" fill="#EEEEEE"/>
+<circle cx="116.562" cy="16.875" r="8.4375" fill="#DADADA"/>
+<rect x="131.75" y="9" width="43.875" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="131.75" y="21.375" width="206.438" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="131.75" y="32.625" width="206.438" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="180.125" y="9" width="7.875" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="131.75" y="45" width="15.75" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="179.422" y="45" width="15.75" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="227.094" y="45" width="15.75" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="274.766" y="45" width="15.75" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="322.438" y="45" width="15.75" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="320.188" y="9" width="7.875" height="7.875" rx="1.125" fill="#DADADA"/>
+<rect x="330.312" y="9" width="7.875" height="7.875" rx="1.125" fill="#DADADA"/>
+</g>
+<rect x="98.2812" y="0.28125" width="251.438" height="60.75" rx="6.46875" stroke="#DADADA" stroke-width="0.5625"/>
+<g clip-path="url(#clip1_18_5065)">
+<rect x="56" y="36.7812" width="336" height="81.75" rx="9" fill="#EEEEEE"/>
+<circle cx="80.75" cy="59.2812" r="11.25" fill="#DADADA"/>
+<rect x="101" y="48.7812" width="58.5" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="101" y="65.2812" width="275.25" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="101" y="80.2812" width="275.25" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="165.5" y="48.7812" width="10.5" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="101" y="96.7812" width="21" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="164.562" y="96.7812" width="21" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="228.125" y="96.7812" width="21" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="291.688" y="96.7812" width="21" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="355.25" y="96.7812" width="21" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="352.25" y="48.7812" width="10.5" height="10.5" rx="1.5" fill="#DADADA"/>
+<rect x="365.75" y="48.7812" width="10.5" height="10.5" rx="1.5" fill="#DADADA"/>
+</g>
+<rect x="56.375" y="37.1562" width="335.25" height="81" rx="8.625" stroke="#DADADA" stroke-width="0.75"/>
+<g clip-path="url(#clip2_18_5065)">
+<rect y="95.7812" width="448" height="109" rx="12" fill="#EEEEEE"/>
+<circle cx="33" cy="125.781" r="15" fill="#DADADA"/>
+<rect x="60" y="111.781" width="78" height="14" rx="2" fill="#DADADA"/>
+<rect x="60" y="133.781" width="367" height="14" rx="2" fill="#DADADA"/>
+<rect x="60" y="153.781" width="367" height="14" rx="2" fill="#DADADA"/>
+<rect x="146" y="111.781" width="14" height="14" rx="2" fill="#DADADA"/>
+<rect x="60" y="175.781" width="28" height="14" rx="2" fill="#DADADA"/>
+<rect x="144.75" y="175.781" width="28" height="14" rx="2" fill="#DADADA"/>
+<rect x="229.5" y="175.781" width="28" height="14" rx="2" fill="#DADADA"/>
+<rect x="314.25" y="175.781" width="28" height="14" rx="2" fill="#DADADA"/>
+<rect x="399" y="175.781" width="28" height="14" rx="2" fill="#DADADA"/>
+<rect x="395" y="111.781" width="14" height="14" rx="2" fill="#DADADA"/>
+<rect x="413" y="111.781" width="14" height="14" rx="2" fill="#DADADA"/>
+</g>
+<rect x="0.5" y="96.2812" width="447" height="108" rx="11.5" stroke="#DADADA"/>
+<defs>
+<clipPath id="clip0_18_5065">
+<rect x="98" width="252" height="61.3125" rx="6.75" fill="white"/>
+</clipPath>
+<clipPath id="clip1_18_5065">
+<rect x="56" y="36.7812" width="336" height="81.75" rx="9" fill="white"/>
+</clipPath>
+<clipPath id="clip2_18_5065">
+<rect y="95.7812" width="448" height="109" rx="12" fill="white"/>
+</clipPath>
+</defs>
+</svg>
