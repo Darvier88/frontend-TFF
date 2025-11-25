@@ -1,11 +1,42 @@
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Button, Paper, Stack, Typography, CircularProgress } from "@mui/material";
+import { useState } from "react";
 
 import logoUrl from "../../assets/tff_logo.svg";
 import xLogo from "../../assets/x-logo.png";
 
+const API_BASE_URL = "http://localhost:8080";
+
 export default function Connect() {
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleConnectAccount = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Llamar al endpoint de login
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`);
+      
+      if (!response.ok) {
+        throw new Error("Error al iniciar el proceso de autenticación");
+      }
+
+      const data = await response.json();
+
+      // Guardar el session_id en localStorage temporalmente (opcional, por si lo necesitas después)
+      localStorage.setItem("temp_session_id", data.session_id);
+      localStorage.setItem("oauth_state", data.state);
+
+      // Redirigir al usuario a Twitter para autorizar
+      window.location.href = data.authorization_url;
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido");
+      setLoading(false);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -150,10 +181,24 @@ export default function Connect() {
               Secure • Private • Read-only access
             </Typography>
 
+            {error && (
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  color: "error.main",
+                  mb: 2,
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                {error}
+              </Typography>
+            )}
+
             <Button
               variant="contained"
               fullWidth
-              onClick={() => {localStorage.setItem("username", "@TheDarkraimola"); navigate("/analyzing")}}
+              onClick={handleConnectAccount}
+              disabled={loading}
               sx={{
                 backgroundColor: "#000",
                 color: "#fff",
@@ -163,12 +208,17 @@ export default function Connect() {
                 fontWeight: 700,
                 fontFamily: "Inter, sans-serif",
                 "&:hover": { backgroundColor: "#111" },
+                "&:disabled": { backgroundColor: "#999" },
                 width: "150px",
                 maxHeight: "44px",
               }}
               className="button-text button-box connect-button"
             >
-              Connect Account
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Connect Account"
+              )}
             </Button>
           </Paper>
         </Box>

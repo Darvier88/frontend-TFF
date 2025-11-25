@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Paper, Stack, Typography, CircularProgress } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -13,21 +13,21 @@ interface AnalyzingProps {
 
 const stepDurations = [100, 2000, 1000];
 
-type TiemposEstimadosCompletos = {
-  tiempo_estimado_total?: string;
-  num_tweets?: number;
-};
+const API_BASE_URL = "http://localhost:8080";
 
 const formatDuration = (hhmmss: string) => {
-  const [hStr, mStr, sStr] = hhmmss.split(":");
+  // Limpiar el símbolo ≈ si existe
+  const cleaned = hhmmss.replace(/≈/g, "").trim();
+  
+  const [hStr, mStr, sStr] = cleaned.split(":");
   const h = Number(hStr || 0);
   const m = Number(mStr || 0);
   const s = Number(sStr || 0);
 
   const parts: string[] = [];
-  if (h) parts.push(`${h} hour`);
-  if (m) parts.push(`, ${m} minutes`);
-  if (s) parts.push(` and ${s} seconds`);
+  if (h) parts.push(`${h} hour${h > 1 ? 's' : ''}`);
+  if (m) parts.push(`${parts.length ? ', ' : ''}${m} minute${m > 1 ? 's' : ''}`);
+  if (s) parts.push(`${parts.length ? ' and ' : ''}${s} second${s > 1 ? 's' : ''}`);
 
   return parts.length ? parts.join("") : hhmmss;
 };
@@ -43,7 +43,9 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     React.useState(totalPosts);
   const [etaLabel, setEtaLabel] = React.useState<string>(`${etaHours} hours`);
   const [resolvedUsername, setResolvedUsername] = React.useState(username);
+  const [isCalculating, setIsCalculating] = React.useState(true);
 
+  // Obtener username de localStorage
   React.useEffect(() => {
     try {
       const saved = localStorage.getItem("username");
@@ -56,26 +58,59 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     }
   }, []);
 
+  // Obtener tiempo estimado desde la API
   React.useEffect(() => {
     const fetchTiempoEstimado = async () => {
       try {
-        const res = await fetch("/tiempos_estimados_minimal.json", {
-          cache: "no-store",
-        });
-        if (!res.ok) return;
+        setIsCalculating(true);
+        
+        // Obtener datos de localStorage
+        const sessionId = localStorage.getItem("session_id");
+        const tweetCount = localStorage.getItem("tweet_count");
 
-        const data: TiemposEstimadosCompletos = await res.json();
-
-        if (data?.num_tweets) {
-          setResolvedTotalPosts(data.num_tweets);
+        // Si hay tweet_count en localStorage, usarlo como fallback
+        if (tweetCount) {
+          const count = Number(tweetCount);
+          if (!isNaN(count)) {
+            setResolvedTotalPosts(count);
+          }
         }
 
+        // Si no hay session_id, no podemos llamar a la API
+        if (!sessionId) {
+          console.warn("No session_id found in localStorage");
+          setIsCalculating(false);
+          return;
+        }
+
+        // Llamar a la API para obtener tiempo estimado
+        const res = await fetch(
+          `${API_BASE_URL}/api/estimate/time?session_id=${sessionId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          console.error("Error fetching estimated time:", res.status);
+          setIsCalculating(false);
+          return;
+        }
+
+        const data = await res.json();
+
+        // Actualizar tiempo estimado si está disponible
         if (data?.tiempo_estimado_total) {
           const formatted = formatDuration(data.tiempo_estimado_total);
           setEtaLabel(formatted);
         }
       } catch (err) {
-        console.error("Error at loading json", err);
+        console.error("Error fetching estimated time from API:", err);
+      } finally {
+        setIsCalculating(false);
       }
     };
 
@@ -138,9 +173,18 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                 {resolvedTotalPosts.toLocaleString()} posts
               </Box>
               . Estimated analysis time:{" "}
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                {etaLabel}
-              </Box>
+              {isCalculating ? (
+                <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+                  <CircularProgress size={14} sx={{ color: "#4A5565" }} />
+                  <Box component="span" sx={{ fontStyle: "italic" }}>
+                    calculating...
+                  </Box>
+                </Box>
+              ) : (
+                <Box component="span" sx={{ fontWeight: 600 }}>
+                  {etaLabel}
+                </Box>
+              )}
               .
             </Typography>
 
