@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Box, Paper, Stack, Typography, CircularProgress } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import logoUrl from "../../assets/tff_logo.svg";
@@ -33,32 +34,62 @@ const formatDuration = (hhmmss: string) => {
 };
 
 const Analyzing: React.FC<AnalyzingProps> = ({
-  username = "username",
+  username, // ✅ REMOVIDO el valor por defecto
   totalPosts = 100,
   etaHours = 1,
 }) => {
+  const navigate = useNavigate();
   const [step, setStep] = React.useState(0);
 
   const [resolvedTotalPosts, setResolvedTotalPosts] =
     React.useState(totalPosts);
   const [etaLabel, setEtaLabel] = React.useState<string>(`${etaHours} hours`);
-  const [resolvedUsername, setResolvedUsername] = React.useState(username);
-  const [isCalculating, setIsCalculating] = React.useState(true);
-
-  // Obtener username de localStorage
-  React.useEffect(() => {
+  
+  // ✅ SOLUCIÓN: Inicializar con función que lee de localStorage INMEDIATAMENTE
+  const [resolvedUsername, setResolvedUsername] = React.useState(() => {
     try {
       const saved = localStorage.getItem("username");
       if (saved) {
         const clean = saved.startsWith("@") ? saved.slice(1) : saved;
-        setResolvedUsername(clean);
+        console.log("✅ [Init] Resolved username from localStorage:", clean);
+        return clean;
+      }
+      // Si no hay en localStorage, usar la prop
+      if (username) {
+        const clean = username.startsWith("@") ? username.slice(1) : username;
+        console.log("ℹ️ [Init] Using username from prop:", clean);
+        return clean;
+      }
+      console.warn("⚠️ [Init] No username found, using fallback");
+      return "username";
+    } catch (err) {
+      console.error("❌ [Init] Error reading username:", err);
+      return "username";
+    }
+  });
+  
+  const [isCalculating, setIsCalculating] = React.useState(true);
+
+  // ✅ Este useEffect ya no es necesario, pero lo dejamos por si acaso
+  // localStorage cambia durante la sesión
+  React.useEffect(() => {
+    console.log("🔍 [useEffect] Checking username in localStorage...");
+    try {
+      const saved = localStorage.getItem("username");
+      if (saved) {
+        const clean = saved.startsWith("@") ? saved.slice(1) : saved;
+        // Solo actualizar si es diferente
+        if (clean !== resolvedUsername) {
+          console.log("🔄 [useEffect] Updating username to:", clean);
+          setResolvedUsername(clean);
+        }
       }
     } catch (err) {
-      console.error("Error reading username from localStorage", err);
+      console.error("❌ [useEffect] Error reading username from localStorage", err);
     }
-  }, []);
+  }, []); // ✅ Array vacío = solo se ejecuta una vez
 
-  // Obtener tiempo estimado desde la API
+  // Obtener tiempo estimado desde la API y ejecutar búsqueda + análisis
   React.useEffect(() => {
     const fetchTiempoEstimado = async () => {
       try {
@@ -114,8 +145,125 @@ const Analyzing: React.FC<AnalyzingProps> = ({
       }
     };
 
-    fetchTiempoEstimado();
-  }, []);
+    const executeSearchAndAnalysis = async () => {
+      const sessionId = localStorage.getItem("session_id");
+      const username = localStorage.getItem("username");
+
+      if (!sessionId) {
+        console.error("❌ No session_id found, skipping search and analysis");
+        return;
+      }
+
+      console.log("🚀 Starting automated search and analysis...");
+
+      // PASO 1: Búsqueda de tweets
+      try {
+        console.log("📡 [1/2] Fetching tweets...");
+        
+        const searchRes = await fetch(
+          `${API_BASE_URL}/api/tweets/search?session_id=${sessionId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              max_tweets: 20,
+              save_to_file: false
+            }),
+          }
+        );
+
+        if (!searchRes.ok) {
+          console.error("❌ Error fetching tweets:", searchRes.status);
+          return;
+        }
+
+        const searchData = await searchRes.json();
+        console.log("✅ Tweets fetched successfully:", {
+          total: searchData.tweets?.length || 0,
+          username: searchData.username,
+          execution_time: searchData.execution_time
+        });
+
+        // Guardar resultados de búsqueda en localStorage
+        localStorage.setItem("search_results", JSON.stringify(searchData));
+        console.log("💾 Search results saved to localStorage");
+
+        // PASO 2: Clasificación de riesgos
+        if (searchData.tweets && searchData.tweets.length > 0) {
+          console.log("🔍 [2/2] Classifying risk...");
+
+          const classifyRes = await fetch(
+            `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_files=false`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                tweets: searchData.tweets.map((t: any) => t.text),
+                max_tweets: 20
+              }),
+            }
+          );
+
+          if (!classifyRes.ok) {
+            console.error("❌ Error classifying risk:", classifyRes.status);
+            return;
+          }
+
+          const riskData = await classifyRes.json();
+          console.log("✅ Risk classification completed:", {
+            total_analyzed: riskData.total_tweets,
+            distribution: riskData.summary?.risk_distribution,
+            execution_time: riskData.execution_time
+          });
+
+          // Separar y guardar los dos JSONs en localStorage
+          const riskSummary = {
+            timestamp: new Date().toISOString(),
+            username: username?.replace('@', '') || 'unknown',
+            total_tweets: riskData.total_tweets,
+            summary: riskData.summary,
+            execution_time: riskData.execution_time
+          };
+
+          const riskDetailed = {
+            results: riskData.results
+          };
+
+          localStorage.setItem("risk_summary", JSON.stringify(riskSummary));
+          localStorage.setItem("risk_detailed", JSON.stringify(riskDetailed));
+          
+          console.log("💾 Risk summary saved to localStorage (key: risk_summary)");
+          console.log("💾 Risk detailed saved to localStorage (key: risk_detailed)");
+          console.log("🎉 All processes completed successfully!");
+          
+          // Redirigir al dashboard después de 1.5 segundos
+          console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 1500);
+
+        } else {
+          console.warn("⚠️ No tweets found to classify");
+        }
+
+      } catch (err) {
+        console.error("❌ Error during search and analysis:", err);
+      }
+    };
+
+    // Ejecutar en secuencia
+    const runAll = async () => {
+      await fetchTiempoEstimado();
+      // Ejecutar búsqueda y análisis después del tiempo estimado
+      await executeSearchAndAnalysis();
+    };
+
+    runAll();
+  }, [navigate]);
 
   React.useEffect(() => {
     if (step >= 3) return;
@@ -197,11 +345,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               }}
               className="analyze-subtext"
             >
-              We will notify you when the report is ready{" "}
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                via email
-              </Box>{" "}
-              📩. You can close this tab.
+              Your dashboard will open automatically when ready 🚀
             </Typography>
           </Stack>
 
@@ -220,7 +364,10 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     }
     return null;
   };
-
+  
+  // Debug log
+  console.log("📍 [Render] Current resolvedUsername:", resolvedUsername);
+  
   return (
     <Box
       sx={{

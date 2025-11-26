@@ -17,22 +17,10 @@ import CleanAccountOverlay from "../components/CleanAccountOverlay";
 import {
   type RiskItem,
   type PostType,
-  type TiemposFile,
   type TweetMeta,
-  type TweetsFileObject,
   PAGE_SIZE,
   formatLabel,
 } from "../data/types";
-
-interface RiskSummaryFile {
-  timestamp?: string;
-  tiempo_total?: string;
-  total_tweets?: number;
-  exitosos?: number;
-  errores?: number;
-  distribucion?: Record<string, number>;
-  labels?: Record<string, number>;
-}
 
 const Dashboard: React.FC = () => {
   const FIXED_CONTENT_LABELS: string[] = [
@@ -172,51 +160,98 @@ const Dashboard: React.FC = () => {
   React.useEffect(() => {
     const load = async () => {
       try {
-        const [detailRes, tiemposRes, summaryRes, tweetsRes] =
-          await Promise.all([
+        console.log("📂 Loading data from localStorage...");
+
+        // Intentar cargar desde localStorage primero
+        const searchResultsStr = localStorage.getItem("search_results");
+        const riskSummaryStr = localStorage.getItem("risk_summary");
+        const riskDetailedStr = localStorage.getItem("risk_detailed");
+
+        let detailArray: RiskItem[] = [];
+        let tweetsArray: TweetMeta[] = [];
+        let tweetsUser: any = undefined;
+        let labelsFromSummary: string[] = [];
+
+        // Si hay datos en localStorage, usarlos
+        if (searchResultsStr && riskDetailedStr) {
+          console.log("✅ Found data in localStorage");
+
+          const searchResults = JSON.parse(searchResultsStr);
+          const riskDetailed = JSON.parse(riskDetailedStr);
+          const riskSummary = riskSummaryStr ? JSON.parse(riskSummaryStr) : null;
+
+          // Extraer tweets del search_results
+          if (searchResults.tweets && Array.isArray(searchResults.tweets)) {
+            tweetsArray = searchResults.tweets;
+            console.log(`📊 Loaded ${tweetsArray.length} tweets from search_results`);
+          }
+
+          // Extraer usuario del search_results
+          if (searchResults.user) {
+            tweetsUser = searchResults.user;
+          }
+
+          // Extraer resultados de clasificación
+          if (riskDetailed.results && Array.isArray(riskDetailed.results)) {
+            detailArray = riskDetailed.results;
+            console.log(`🛡️ Loaded ${detailArray.length} risk classifications`);
+          }
+
+          // Extraer labels del summary
+          if (riskSummary?.summary?.label_counts) {
+            labelsFromSummary = Object.keys(riskSummary.summary.label_counts);
+          }
+
+        } else {
+          // Fallback: cargar desde archivos JSON estáticos
+          console.log("⚠️ No data in localStorage, loading from static files...");
+
+          const [detailRes, summaryRes, tweetsRes] = await Promise.all([
             fetch("/risk_detailed_text_only.json"),
-            fetch("/tiempos_estimados_minimal.json"),
             fetch("/risk_summary_text_only.json"),
             fetch("/tweets_TheDarkraimola_20251120_180501.json"),
           ]);
 
-        if (
-          !detailRes.ok ||
-          !tiemposRes.ok ||
-          !summaryRes.ok ||
-          !tweetsRes.ok
-        ) {
-          throw new Error("Error at loading JSON");
-        }
+          if (!detailRes.ok || !summaryRes.ok || !tweetsRes.ok) {
+            throw new Error("Error loading JSON files");
+          }
 
-        const detailJson: unknown = await detailRes.json();
-        const tiemposJson: TiemposFile = await tiemposRes.json();
-        const summaryJson: RiskSummaryFile = await summaryRes.json();
-        const rawTweetsJson: unknown = await tweetsRes.json();
+          const detailJson: unknown = await detailRes.json();
+          const summaryJson: any = await summaryRes.json();
+          const rawTweetsJson: unknown = await tweetsRes.json();
 
-        // ---- DETAIL ARRAY ----
-        let detailArray: RiskItem[] = [];
-        if (Array.isArray(detailJson)) {
-          detailArray = detailJson as RiskItem[];
-        } else if (
-          typeof detailJson === "object" &&
-          detailJson !== null &&
-          "results" in detailJson &&
-          Array.isArray((detailJson as { results: unknown }).results)
-        ) {
-          detailArray = (detailJson as { results: RiskItem[] }).results;
-        } else if (
-          typeof detailJson === "object" &&
-          detailJson !== null &&
-          "resultados" in detailJson &&
-          Array.isArray((detailJson as { resultados: unknown }).resultados)
-        ) {
-          detailArray = (detailJson as { resultados: RiskItem[] }).resultados;
-        } else if (typeof detailJson === "object" && detailJson !== null) {
-          const arrays = Object.values(
-            detailJson as Record<string, unknown>
-          ).filter((value): value is RiskItem[] => Array.isArray(value));
-          detailArray = arrays.flat();
+          // Procesar detail array
+          if (Array.isArray(detailJson)) {
+            detailArray = detailJson as RiskItem[];
+          } else if (
+            typeof detailJson === "object" &&
+            detailJson !== null &&
+            "results" in detailJson
+          ) {
+            detailArray = (detailJson as { results: RiskItem[] }).results;
+          } else if (
+            typeof detailJson === "object" &&
+            detailJson !== null &&
+            "resultados" in detailJson
+          ) {
+            detailArray = (detailJson as { resultados: RiskItem[] }).resultados;
+          }
+
+          // Procesar labels del summary
+          if (summaryJson?.labels && typeof summaryJson.labels === "object") {
+            labelsFromSummary = Object.keys(summaryJson.labels);
+          }
+
+          // Procesar tweets
+          if (Array.isArray(rawTweetsJson)) {
+            tweetsArray = rawTweetsJson as TweetMeta[];
+          } else if (typeof rawTweetsJson === "object" && rawTweetsJson !== null) {
+            const obj = rawTweetsJson as any;
+            tweetsUser = obj.user;
+            if (Array.isArray(obj.tweets)) {
+              tweetsArray = obj.tweets;
+            }
+          }
         }
 
         if (detailArray.length > 0) {
@@ -226,28 +261,19 @@ const Dashboard: React.FC = () => {
         setRiskItems(detailArray);
         setVisibleCount(PAGE_SIZE);
 
-        let labelsFromSummary: string[] = [];
-        if (
-          summaryJson &&
-          typeof summaryJson === "object" &&
-          summaryJson.labels &&
-          typeof summaryJson.labels === "object"
-        ) {
-          labelsFromSummary = Object.keys(summaryJson.labels);
-        }
-
+        // Extraer labels únicos
         const uniqueLabelsSet = new Set<string>();
         detailArray.forEach((item) => {
           if (Array.isArray(item.labels)) {
             item.labels.forEach((lbl) => uniqueLabelsSet.add(String(lbl)));
           }
         });
-        
+
         let labelsToUse = Array.from(uniqueLabelsSet);
-        
+
         if (labelsToUse.length === 0) {
-             if (labelsFromSummary.length > 0) labelsToUse = labelsFromSummary;
-             else labelsToUse = FIXED_CONTENT_LABELS;
+          if (labelsFromSummary.length > 0) labelsToUse = labelsFromSummary;
+          else labelsToUse = FIXED_CONTENT_LABELS;
         }
 
         setContentLabels(labelsToUse);
@@ -258,28 +284,9 @@ const Dashboard: React.FC = () => {
         });
         setContentFilters(initialContentFilters);
 
-        // ---- TWEETS ----
-        let tweetsArray: TweetMeta[] = [];
-        let tweetsUser: TweetsFileObject["user"] = undefined;
-
-        if (Array.isArray(rawTweetsJson)) {
-          tweetsArray = rawTweetsJson as TweetMeta[];
-        } else if (
-          typeof rawTweetsJson === "object" &&
-          rawTweetsJson !== null
-        ) {
-          const obj = rawTweetsJson as TweetsFileObject;
-          tweetsUser = obj.user;
-          if (Array.isArray(obj.tweets)) {
-            tweetsArray = obj.tweets;
-          }
-        }
-
+        // Configurar usuario
         const storedUsername = localStorage.getItem("username") || undefined;
-        let userFromConfig =
-          storedUsername ??
-          tiemposJson.configuracion?.usuario ??
-          (tweetsUser?.username ? tweetsUser.username : "username");
+        let userFromConfig = storedUsername || tweetsUser?.username || "username";
 
         if (!userFromConfig.startsWith("@")) {
           userFromConfig = "@" + userFromConfig;
@@ -293,10 +300,18 @@ const Dashboard: React.FC = () => {
           setProfileName(tweetsUser.name);
         }
 
-        setImageUrl(
-          "https://pbs.twimg.com/profile_images/1967754912487325696/4SlUewFK_400x400.jpg"
-        );
+        // Configurar avatar
+        if (tweetsUser?.avatar_url) {
+          setImageUrl(tweetsUser.avatar_url);
+        } else if (tweetsUser?.profile_image_url) {
+          setImageUrl(tweetsUser.profile_image_url);
+        } else {
+          setImageUrl(
+            "https://pbs.twimg.com/profile_images/1967754912487325696/4SlUewFK_400x400.jpg"
+          );
+        }
 
+        // Mapear tweets por ID
         const map: Record<string, TweetMeta> = {};
         tweetsArray.forEach((t) => {
           if (t && t.id) {
@@ -305,9 +320,10 @@ const Dashboard: React.FC = () => {
         });
         setTweetMetaMap(map);
 
+        console.log("✅ Dashboard data loaded successfully");
         setLoading(false);
       } catch (e: unknown) {
-        console.error(e);
+        console.error("❌ Error loading dashboard data:", e);
         if (e instanceof Error) {
           setError(e.message);
         } else {
@@ -326,7 +342,6 @@ const Dashboard: React.FC = () => {
       [label]: !prev[label],
     }));
   };
-
 
   const toggleRiskFilter = (key: keyof typeof riskFilters) => {
     setRiskFilters((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -389,7 +404,10 @@ const Dashboard: React.FC = () => {
     contentLabels.every((lbl) => contentFilters[lbl] === false);
 
   const allRiskUnchecked =
-    !riskFilters.high && !riskFilters.mid && !riskFilters.low && !riskFilters.no;
+    !riskFilters.high &&
+    !riskFilters.mid &&
+    !riskFilters.low &&
+    !riskFilters.no;
 
   const allPostTypeUnchecked =
     !postTypeFilters.original &&
