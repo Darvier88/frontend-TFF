@@ -22,6 +22,8 @@ import {
   formatLabel,
 } from "../data/types";
 
+const API_BASE_URL = "http://localhost:8080";
+
 const Dashboard: React.FC = () => {
   const FIXED_CONTENT_LABELS: string[] = [
     "Political sensitive",
@@ -157,101 +159,79 @@ const Dashboard: React.FC = () => {
     return counts;
   }, [riskItems, getPostType]);
 
+  // ✅ CARGAR DATOS DESDE FIREBASE
   React.useEffect(() => {
-    const load = async () => {
+    const loadDataFromFirebase = async () => {
       try {
-        console.log("📂 Loading data from localStorage...");
+        console.log("🔥 Loading data from Firebase...");
 
-        // Intentar cargar desde localStorage primero
-        const searchResultsStr = localStorage.getItem("search_results");
-        const riskSummaryStr = localStorage.getItem("risk_summary");
-        const riskDetailedStr = localStorage.getItem("risk_detailed");
+        // Obtener datos de sessionStorage
+        const sessionId = sessionStorage.getItem("session_id");
+        const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+        const classificationDocId = sessionStorage.getItem("classification_firebase_id");
+        const storedUsername = sessionStorage.getItem("username");
+
+        // Validar que tenemos los datos necesarios
+        if (!sessionId) {
+          throw new Error("No session ID found. Please login again.");
+        }
+
+        if (!tweetsDocId || !classificationDocId) {
+          throw new Error("No Firebase document IDs found. Please analyze your account first.");
+        }
+
+        console.log("📋 Session ID:", sessionId);
+        console.log("📋 Tweets Doc ID:", tweetsDocId);
+        console.log("📋 Classification Doc ID:", classificationDocId);
+
+        // Llamar al endpoint para obtener datos de Firebase
+        const response = await fetch(
+          `${API_BASE_URL}/api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Error loading data from Firebase");
+        }
+
+        const firebaseData = await response.json();
+        console.log("✅ Data loaded from Firebase:", firebaseData);
+
+        // Extraer datos
+        const tweetsData = firebaseData.data.tweets_data;
+        const classificationData = firebaseData.data.classification_data;
 
         let detailArray: RiskItem[] = [];
         let tweetsArray: TweetMeta[] = [];
         let tweetsUser: any = undefined;
         let labelsFromSummary: string[] = [];
 
-        // Si hay datos en localStorage, usarlos
-        if (searchResultsStr && riskDetailedStr) {
-          console.log("✅ Found data in localStorage");
+        // Procesar tweets
+        if (tweetsData?.tweets && Array.isArray(tweetsData.tweets)) {
+          tweetsArray = tweetsData.tweets;
+          console.log(`📊 Loaded ${tweetsArray.length} tweets from Firebase`);
+        }
 
-          const searchResults = JSON.parse(searchResultsStr);
-          const riskDetailed = JSON.parse(riskDetailedStr);
-          const riskSummary = riskSummaryStr ? JSON.parse(riskSummaryStr) : null;
+        // Procesar usuario
+        if (tweetsData?.user_info) {
+          tweetsUser = tweetsData.user_info;
+        }
 
-          // Extraer tweets del search_results
-          if (searchResults.tweets && Array.isArray(searchResults.tweets)) {
-            tweetsArray = searchResults.tweets;
-            console.log(`📊 Loaded ${tweetsArray.length} tweets from search_results`);
-          }
+        // Procesar clasificación
+        if (classificationData?.results && Array.isArray(classificationData.results)) {
+          detailArray = classificationData.results;
+          console.log(`🛡️ Loaded ${detailArray.length} risk classifications from Firebase`);
+        }
 
-          // Extraer usuario del search_results
-          if (searchResults.user) {
-            tweetsUser = searchResults.user;
-          }
-
-          // Extraer resultados de clasificación
-          if (riskDetailed.results && Array.isArray(riskDetailed.results)) {
-            detailArray = riskDetailed.results;
-            console.log(`🛡️ Loaded ${detailArray.length} risk classifications`);
-          }
-
-          // Extraer labels del summary
-          if (riskSummary?.summary?.label_counts) {
-            labelsFromSummary = Object.keys(riskSummary.summary.label_counts);
-          }
-
-        } else {
-          // Fallback: cargar desde archivos JSON estáticos
-          console.log("⚠️ No data in localStorage, loading from static files...");
-
-          const [detailRes, summaryRes, tweetsRes] = await Promise.all([
-            fetch("/risk_detailed_text_only.json"),
-            fetch("/risk_summary_text_only.json"),
-            fetch("/tweets_TheDarkraimola_20251120_180501.json"),
-          ]);
-
-          if (!detailRes.ok || !summaryRes.ok || !tweetsRes.ok) {
-            throw new Error("Error loading JSON files");
-          }
-
-          const detailJson: unknown = await detailRes.json();
-          const summaryJson: any = await summaryRes.json();
-          const rawTweetsJson: unknown = await tweetsRes.json();
-
-          // Procesar detail array
-          if (Array.isArray(detailJson)) {
-            detailArray = detailJson as RiskItem[];
-          } else if (
-            typeof detailJson === "object" &&
-            detailJson !== null &&
-            "results" in detailJson
-          ) {
-            detailArray = (detailJson as { results: RiskItem[] }).results;
-          } else if (
-            typeof detailJson === "object" &&
-            detailJson !== null &&
-            "resultados" in detailJson
-          ) {
-            detailArray = (detailJson as { resultados: RiskItem[] }).resultados;
-          }
-
-          // Procesar labels del summary
-          if (summaryJson?.labels && typeof summaryJson.labels === "object") {
-            labelsFromSummary = Object.keys(summaryJson.labels);
-          }
-
-          // Procesar tweets
-          if (Array.isArray(rawTweetsJson)) {
-            tweetsArray = rawTweetsJson as TweetMeta[];
-          } else if (typeof rawTweetsJson === "object" && rawTweetsJson !== null) {
-            const obj = rawTweetsJson as any;
-            tweetsUser = obj.user;
-            if (Array.isArray(obj.tweets)) {
-              tweetsArray = obj.tweets;
-            }
-          }
+        // Extraer labels del summary
+        if (classificationData?.summary?.label_counts) {
+          labelsFromSummary = Object.keys(classificationData.summary.label_counts);
         }
 
         if (detailArray.length > 0) {
@@ -285,7 +265,6 @@ const Dashboard: React.FC = () => {
         setContentFilters(initialContentFilters);
 
         // Configurar usuario
-        const storedUsername = localStorage.getItem("username") || undefined;
         let userFromConfig = storedUsername || tweetsUser?.username || "username";
 
         if (!userFromConfig.startsWith("@")) {
@@ -320,10 +299,10 @@ const Dashboard: React.FC = () => {
         });
         setTweetMetaMap(map);
 
-        console.log("✅ Dashboard data loaded successfully");
+        console.log("✅ Dashboard data loaded successfully from Firebase");
         setLoading(false);
       } catch (e: unknown) {
-        console.error("❌ Error loading dashboard data:", e);
+        console.error("❌ Error loading dashboard data from Firebase:", e);
         if (e instanceof Error) {
           setError(e.message);
         } else {
@@ -333,7 +312,7 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    load();
+    loadDataFromFirebase();
   }, []);
 
   const toggleContentFilter = (label: string) => {
@@ -515,9 +494,14 @@ const Dashboard: React.FC = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexDirection: "column",
+              gap: 2,
             }}
           >
             <CircularProgress />
+            <Typography sx={{ color: "#666", fontSize: 14 }}>
+              Loading your data from Firebase...
+            </Typography>
           </Box>
         </Paper>
       </Box>
@@ -561,9 +545,27 @@ const Dashboard: React.FC = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexDirection: "column",
+              gap: 2,
             }}
           >
-            <Typography color="error">{error}</Typography>
+            <Typography color="error" sx={{ fontSize: 18, fontWeight: 600 }}>
+              Error Loading Data
+            </Typography>
+            <Typography color="error" sx={{ fontSize: 14 }}>
+              {error}
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => window.location.href = "/"}
+              sx={{
+                mt: 2,
+                bgcolor: "#0F0F0F",
+                "&:hover": { bgcolor: "#333" }
+              }}
+            >
+              Go Back
+            </Button>
           </Box>
         </Paper>
       </Box>

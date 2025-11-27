@@ -34,10 +34,10 @@ export default function OAuthCallback() {
           return;
         }
 
-        // Guardar session_id y username básico
-        localStorage.setItem("session_id", sessionId);
+        // ✅ Guardar en sessionStorage (no localStorage)
+        sessionStorage.setItem("session_id", sessionId);
         if (username) {
-          localStorage.setItem("username", `@${username}`);
+          sessionStorage.setItem("username", `@${username}`);
         }
 
         // Obtener datos completos del usuario desde el backend
@@ -47,16 +47,16 @@ export default function OAuthCallback() {
           if (response.ok) {
             const data = await response.json();
             
-            // Guardar tweet_count en localStorage
+            // Guardar tweet_count en sessionStorage
             if (data.user && data.user.tweet_count !== undefined) {
-              localStorage.setItem("tweet_count", data.user.tweet_count.toString());
+              sessionStorage.setItem("tweet_count", data.user.tweet_count.toString());
             }
             
             // Opcional: guardar otros datos si los necesitas
             if (data.user) {
-              localStorage.setItem("user_id", data.user.id || "");
-              localStorage.setItem("user_name", data.user.name || "");
-              localStorage.setItem("followers_count", (data.user.followers_count || 0).toString());
+              sessionStorage.setItem("user_id", data.user.id || "");
+              sessionStorage.setItem("user_name", data.user.name || "");
+              sessionStorage.setItem("followers_count", (data.user.followers_count || 0).toString());
             }
           }
         } catch (err) {
@@ -64,9 +64,9 @@ export default function OAuthCallback() {
           // No falla el flujo si no se pueden obtener los datos adicionales
         }
 
-        // Limpiar datos temporales
-        localStorage.removeItem("temp_session_id");
-        localStorage.removeItem("oauth_state");
+        // ✅ Limpiar datos temporales de sessionStorage
+        sessionStorage.removeItem("temp_session_id");
+        sessionStorage.removeItem("oauth_state");
 
         setStatus("success");
 

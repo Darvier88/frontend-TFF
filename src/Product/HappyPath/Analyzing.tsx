@@ -17,7 +17,6 @@ const stepDurations = [100, 2000, 1000];
 const API_BASE_URL = "http://localhost:8080";
 
 const formatDuration = (hhmmss: string) => {
-  // Limpiar el símbolo ≈ si existe
   const cleaned = hhmmss.replace(/≈/g, "").trim();
   
   const [hStr, mStr, sStr] = cleaned.split(":");
@@ -34,27 +33,25 @@ const formatDuration = (hhmmss: string) => {
 };
 
 const Analyzing: React.FC<AnalyzingProps> = ({
-  username, // ✅ REMOVIDO el valor por defecto
+  username,
   totalPosts = 100,
   etaHours = 1,
 }) => {
   const navigate = useNavigate();
   const [step, setStep] = React.useState(0);
 
-  const [resolvedTotalPosts, setResolvedTotalPosts] =
-    React.useState(totalPosts);
+  const [resolvedTotalPosts, setResolvedTotalPosts] = React.useState(totalPosts);
   const [etaLabel, setEtaLabel] = React.useState<string>(`${etaHours} hours`);
   
-  // ✅ SOLUCIÓN: Inicializar con función que lee de localStorage INMEDIATAMENTE
+  // ✅ Obtener username del sessionStorage (temporal durante la sesión)
   const [resolvedUsername, setResolvedUsername] = React.useState(() => {
     try {
-      const saved = localStorage.getItem("username");
+      const saved = sessionStorage.getItem("username");
       if (saved) {
         const clean = saved.startsWith("@") ? saved.slice(1) : saved;
-        console.log("✅ [Init] Resolved username from localStorage:", clean);
+        console.log("✅ [Init] Resolved username from sessionStorage:", clean);
         return clean;
       }
-      // Si no hay en localStorage, usar la prop
       if (username) {
         const clean = username.startsWith("@") ? username.slice(1) : username;
         console.log("ℹ️ [Init] Using username from prop:", clean);
@@ -70,36 +67,15 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   
   const [isCalculating, setIsCalculating] = React.useState(true);
 
-  // ✅ Este useEffect ya no es necesario, pero lo dejamos por si acaso
-  // localStorage cambia durante la sesión
-  React.useEffect(() => {
-    console.log("🔍 [useEffect] Checking username in localStorage...");
-    try {
-      const saved = localStorage.getItem("username");
-      if (saved) {
-        const clean = saved.startsWith("@") ? saved.slice(1) : saved;
-        // Solo actualizar si es diferente
-        if (clean !== resolvedUsername) {
-          console.log("🔄 [useEffect] Updating username to:", clean);
-          setResolvedUsername(clean);
-        }
-      }
-    } catch (err) {
-      console.error("❌ [useEffect] Error reading username from localStorage", err);
-    }
-  }, []); // ✅ Array vacío = solo se ejecuta una vez
-
-  // Obtener tiempo estimado desde la API y ejecutar búsqueda + análisis
+  // Obtener tiempo estimado y ejecutar búsqueda + análisis
   React.useEffect(() => {
     const fetchTiempoEstimado = async () => {
       try {
         setIsCalculating(true);
         
-        // Obtener datos de localStorage
-        const sessionId = localStorage.getItem("session_id");
-        const tweetCount = localStorage.getItem("tweet_count");
+        const sessionId = sessionStorage.getItem("session_id");
+        const tweetCount = sessionStorage.getItem("tweet_count");
 
-        // Si hay tweet_count en localStorage, usarlo como fallback
         if (tweetCount) {
           const count = Number(tweetCount);
           if (!isNaN(count)) {
@@ -107,14 +83,12 @@ const Analyzing: React.FC<AnalyzingProps> = ({
           }
         }
 
-        // Si no hay session_id, no podemos llamar a la API
         if (!sessionId) {
-          console.warn("No session_id found in localStorage");
+          console.warn("No session_id found in sessionStorage");
           setIsCalculating(false);
           return;
         }
 
-        // Llamar a la API para obtener tiempo estimado
         const res = await fetch(
           `${API_BASE_URL}/api/estimate/time?session_id=${sessionId}`,
           {
@@ -133,7 +107,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
         const data = await res.json();
 
-        // Actualizar tiempo estimado si está disponible
         if (data?.tiempo_estimado_total) {
           const formatted = formatDuration(data.tiempo_estimado_total);
           setEtaLabel(formatted);
@@ -146,8 +119,8 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     };
 
     const executeSearchAndAnalysis = async () => {
-      const sessionId = localStorage.getItem("session_id");
-      const username = localStorage.getItem("username");
+      const sessionId = sessionStorage.getItem("session_id");
+      const username = sessionStorage.getItem("username");
 
       if (!sessionId) {
         console.error("❌ No session_id found, skipping search and analysis");
@@ -156,9 +129,9 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
       console.log("🚀 Starting automated search and analysis...");
 
-      // PASO 1: Búsqueda de tweets
+      // ✅ PASO 1: Búsqueda de tweets (solo Firebase)
       try {
-        console.log("📡 [1/2] Fetching tweets...");
+        console.log("📡 [1/2] Fetching tweets and saving to Firebase...");
         
         const searchRes = await fetch(
           `${API_BASE_URL}/api/tweets/search?session_id=${sessionId}`,
@@ -168,8 +141,8 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              max_tweets: 20,
-              save_to_file: false
+              max_tweets: 10, // null = todos los tweets
+              save_to_firebase: true
             }),
           }
         );
@@ -180,30 +153,33 @@ const Analyzing: React.FC<AnalyzingProps> = ({
         }
 
         const searchData = await searchRes.json();
-        console.log("✅ Tweets fetched successfully:", {
+        console.log("✅ Tweets fetched and saved to Firebase:", {
           total: searchData.tweets?.length || 0,
           username: searchData.username,
+          firebase_doc_id: searchData.firebase_doc_id,
           execution_time: searchData.execution_time
         });
 
-        // Guardar resultados de búsqueda en localStorage
-        localStorage.setItem("search_results", JSON.stringify(searchData));
-        console.log("💾 Search results saved to localStorage");
+        // ✅ Guardar Firebase Doc ID en sessionStorage (para pasar al Dashboard)
+        if (searchData.firebase_doc_id) {
+          sessionStorage.setItem("tweets_firebase_id", searchData.firebase_doc_id);
+          console.log("💾 Tweets Firebase Doc ID saved to session");
+        }
 
-        // PASO 2: Clasificación de riesgos
+        // ✅ PASO 2: Clasificación de riesgos (solo Firebase)
         if (searchData.tweets && searchData.tweets.length > 0) {
-          console.log("🔍 [2/2] Classifying risk...");
+          console.log("🔍 [2/2] Classifying risk and saving to Firebase...");
 
           const classifyRes = await fetch(
-            `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_files=false`,
+            `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                tweets: searchData.tweets.map((t: any) => t.text),
-                max_tweets: 20
+                tweets: searchData.tweets, // Objetos completos
+                max_tweets: null // null = todos
               }),
             }
           );
@@ -214,33 +190,23 @@ const Analyzing: React.FC<AnalyzingProps> = ({
           }
 
           const riskData = await classifyRes.json();
-          console.log("✅ Risk classification completed:", {
+          console.log("✅ Risk classification completed and saved to Firebase:", {
             total_analyzed: riskData.total_tweets,
             distribution: riskData.summary?.risk_distribution,
+            firebase_doc_id: riskData.firebase_doc_id,
             execution_time: riskData.execution_time
           });
 
-          // Separar y guardar los dos JSONs en localStorage
-          const riskSummary = {
-            timestamp: new Date().toISOString(),
-            username: username?.replace('@', '') || 'unknown',
-            total_tweets: riskData.total_tweets,
-            summary: riskData.summary,
-            execution_time: riskData.execution_time
-          };
-
-          const riskDetailed = {
-            results: riskData.results
-          };
-
-          localStorage.setItem("risk_summary", JSON.stringify(riskSummary));
-          localStorage.setItem("risk_detailed", JSON.stringify(riskDetailed));
+          // ✅ Guardar Firebase Doc ID en sessionStorage
+          if (riskData.firebase_doc_id) {
+            sessionStorage.setItem("classification_firebase_id", riskData.firebase_doc_id);
+            console.log("💾 Classification Firebase Doc ID saved to session");
+          }
           
-          console.log("💾 Risk summary saved to localStorage (key: risk_summary)");
-          console.log("💾 Risk detailed saved to localStorage (key: risk_detailed)");
+          console.log("🔥 All data saved to Firebase!");
           console.log("🎉 All processes completed successfully!");
           
-          // Redirigir al dashboard después de 1.5 segundos
+          // Redirigir al dashboard
           console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
           setTimeout(() => {
             navigate("/dashboard");
@@ -258,7 +224,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     // Ejecutar en secuencia
     const runAll = async () => {
       await fetchTiempoEstimado();
-      // Ejecutar búsqueda y análisis después del tiempo estimado
       await executeSearchAndAnalysis();
     };
 
@@ -365,7 +330,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     return null;
   };
   
-  // Debug log
   console.log("📍 [Render] Current resolvedUsername:", resolvedUsername);
   
   return (
