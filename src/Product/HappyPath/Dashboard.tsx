@@ -39,12 +39,15 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const [riskItems, setRiskItems] = React.useState<MergedRiskItem[]>([]);
+  const [riskItems, setRiskItems] = React.useState<RiskItem[]>([]);
+
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [username, setUsername] = React.useState<string>("");
 
   const [hadDataInitially, setHadDataInitially] = React.useState(false);
-
+  const [tweetMetaMap, setTweetMetaMap] = React.useState<
+    Record<string, TweetMeta>
+  >({});
   const [profileName, setProfileName] = React.useState<string>("");
   const [profileHandle, setProfileHandle] = React.useState<string>("");
   const [imageUrl, setImageUrl] = React.useState<string>("");
@@ -173,32 +176,34 @@ const Dashboard: React.FC = () => {
   }, [isCleanAccount]);
 
   const getPostType = React.useCallback(
-    (item: MergedRiskItem): PostType => {
-      const isRetweet = item.is_retweet === true;
-      const hasRetweetRef = item.referenced_tweets?.some((t) => t.type === "retweeted");
+    (item: RiskItem): PostType => {
+      if (item.post_type) return item.post_type;
 
-      if (isRetweet || hasRetweetRef) {
-        return "repost";
-      }
+      const meta = tweetMetaMap[String(item.tweet_id)];
+      const text = (meta?.text || item.text || "").trim();
 
-      // 2. Quote
-      const hasQuoteRef = item.referenced_tweets?.some((t) => t.type === "quoted");
-      if (hasQuoteRef) {
-        return "quote";
-      }
+      const baseHandle = (profileHandle || username || "@user").replace(
+        /^@/,
+        ""
+      );
+      const isRt = (meta?.is_retweet ?? item.is_retweet) === true;
 
-      // 3. Reply
-      const hasReplyRef = item.referenced_tweets?.some((t) => t.type === "replied_to");
-      if (hasReplyRef) {
+      const selfRtRegex = new RegExp(`^RT\\s+@${baseHandle}\\b`, "i");
+      const isSelfRt = isRt && selfRtRegex.test(text);
+      if (isSelfRt) return "quote";
+
+      if (isRt) return "repost";
+
+      const refType = meta?.referenced_tweets?.[0]?.type;
+      const startsWithMention = /^@[\w_]+/.test(text);
+      if (!isRt && refType === "replied_to" && startsWithMention) {
         return "reply";
       }
 
-      // 4. Default -> Original
       return "original";
     },
-    []
+    [profileHandle, username, tweetMetaMap]
   );
-
   const riskCounts = React.useMemo(() => {
     const counts = { high: 0, mid: 0, low: 0, no: 0 };
     riskItems.forEach((item) => {
@@ -207,9 +212,9 @@ const Dashboard: React.FC = () => {
       else if (item.risk_level === "low") counts.low += 1;
       else if (item.risk_level === "no") counts.no += 1;
     });
+
     return counts;
   }, [riskItems]);
-
   const postTypeCounts = React.useMemo(() => {
     const counts = {
       original: 0,
@@ -825,10 +830,6 @@ const Dashboard: React.FC = () => {
     !riskFilters.mid &&
     !riskFilters.low &&
     !riskFilters.no;
-    !riskFilters.high &&
-    !riskFilters.mid &&
-    !riskFilters.low &&
-    !riskFilters.no;
 
   const allPostTypeUnchecked =
     !postTypeFilters.original &&
@@ -1047,9 +1048,86 @@ const Dashboard: React.FC = () => {
             }}
           >
             {noDataAvailable ? (
-              <Box className="removed-container" sx={{ p: 5, textAlign: "center" }}>
-                  <Typography variant="h5" sx={{ mb: 2 }}>Nothing to Check Here</Typography>
-                  <Button variant="contained" onClick={() => window.location.href = "/"}>Log out</Button>
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontFamily:
+                    "Inter, system-ui, -apple-system, BlinkMacSystemFont",
+                }}
+                className="removed-container"
+              >
+                <Box
+                  sx={{
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: 28,
+                      fontWeight: 700,
+                      mb: 4,
+                      mt: -4.5,
+                    }}
+                    className="title-nothing"
+                  >
+                    Nothing to Check Here
+                  </Typography>
+
+                  <Typography
+                    sx={{
+                      textAlign: "center",
+                      mb: 3,
+                    }}
+                    className="removed-text"
+                  >
+                    We couldn&apos;t find any posts or reposts on your
+                    connected account.
+                  </Typography>
+
+                  <Box sx={{ mb: 4 }}>
+                    <Typography
+                      sx={{
+                        fontSize: 14,
+                        mb: 1,
+                        fontWeight: 500,
+                        textAlign: "left",
+                      }}
+                      className="removed-text"
+                    >
+                      This could mean:
+                    </Typography>
+                    <ul
+                      style={{
+                        textAlign: "left",
+                      }}
+                      className="removed-bullets removed-text"
+                    >
+                      <li>Your account is brand new</li>
+                      <li>You&apos;ve already deleted all previous posts</li>
+                    </ul>
+                  </Box>
+
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      window.location.href = "/";
+                    }}
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: "6px",
+                      px: 2,
+                      py: 1.5,
+                      bgcolor: "#0F0F0F",
+                    }}
+                    className="button-nothing"
+                  >
+                    Log out
+                  </Button>
+                </Box>
               </Box>
             ) : (
               <Box
@@ -1098,7 +1176,7 @@ const Dashboard: React.FC = () => {
                   onConfirmRemove={handleConfirmRemove}
                   onLoadMore={handleLoadMore}
                   getPostType={getPostType}
-                  tweetMetaMap={{}}
+                  tweetMetaMap={tweetMetaMap}
                   profileName={profileName}
                   profileHandle={profileHandle}
                   username={username}
