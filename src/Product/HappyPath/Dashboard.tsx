@@ -92,80 +92,60 @@ const Dashboard: React.FC = () => {
 
   const isCleanAccount =
     !loading && !error && riskItems.length > 0 && !hasAnyRiskTweet;
-  const validateTokenAndLoadData = async (token: string) => {
+  const loadDataFromUrl = async (
+  tweetsId: string, 
+  classificationId: string, 
+  usernameParam: string | null
+) => {
   try {
-    setLoading(true);
-    console.log("🔐 Validating access token...");
+    console.log("🔗 Loading data from URL parameters...");
+    console.log("   Tweets ID:", tweetsId);
+    console.log("   Classification ID:", classificationId);
+    console.log("   Username:", usernameParam);
     
-    // Llamar al endpoint de validación
-    const url = `${API_BASE_URL}/api/auth/validate-token?token=${token}`;
+    // Guardar en sessionStorage para que el Dashboard funcione normalmente
+    sessionStorage.setItem("tweets_firebase_id", tweetsId);
+    sessionStorage.setItem("classification_firebase_id", classificationId);
     
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("❌ Token validation failed:", errorData);
-      
-      setError(
-        errorData.detail || 
-        "Invalid or expired link. Please request a new analysis."
-      );
-      setLoading(false);
-      return;
+    if (usernameParam) {
+      sessionStorage.setItem("username", usernameParam);
     }
     
-    const tokenData = await response.json();
-    console.log("✅ Token validated:", tokenData);
-    
-    // Guardar datos en sessionStorage para que el Dashboard funcione normalmente
-    sessionStorage.setItem("username", tokenData.username);
-    sessionStorage.setItem("tweets_firebase_id", tokenData.tweets_firebase_id);
-    sessionStorage.setItem("classification_firebase_id", tokenData.classification_firebase_id);
-    
-    // Crear un pseudo session_id (no es necesario para autenticación, solo para consistencia)
-    const pseudoSessionId = `token_${Date.now()}`;
+    // Crear un pseudo session_id (no es necesario para autenticación)
+    const pseudoSessionId = `url_${Date.now()}`;
     sessionStorage.setItem("session_id", pseudoSessionId);
     
     console.log("💾 Data saved to sessionStorage");
-    console.log("   Username:", tokenData.username);
-    console.log("   Tweets Doc:", tokenData.tweets_firebase_id);
-    console.log("   Classification Doc:", tokenData.classification_firebase_id);
     
-    // Limpiar el token de la URL (opcional, para que se vea más limpio)
+    // Limpiar los parámetros de la URL (opcional, para que se vea más limpio)
     window.history.replaceState({}, document.title, "/dashboard");
     
-    // NO llamar a loadDataFromFirebase() aquí porque el useEffect principal
-    // lo detectará automáticamente cuando vea que sessionStorage tiene datos
-    
-    setLoading(false);
+    console.log("✅ URL parameters processed, reloading page...");
     
     // Forzar recarga para que el useEffect principal se ejecute con los nuevos datos
     window.location.reload();
     
   } catch (error) {
-    console.error("❌ Error validating token:", error);
+    console.error("❌ Error loading data from URL:", error);
     
     setError(
       error instanceof Error 
         ? error.message 
-        : "Error validating access link. Please try again."
+        : "Error loading data from link. Please try again."
     );
     setLoading(false);
   }
 };
  React.useEffect(() => {
-  // Detectar si hay token en la URL
+  // Detectar si hay Firebase IDs en la URL
   const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get('token');
+  const tweetsId = urlParams.get('tweets_id');
+  const classificationId = urlParams.get('classification_id');
+  const usernameParam = urlParams.get('username');
   
-  if (token) {
-    console.log("🔐 Token detected in URL, validating...");
-    validateTokenAndLoadData(token);
+  if (tweetsId && classificationId) {
+    console.log("🔗 Firebase IDs detected in URL, loading data...");
+    loadDataFromUrl(tweetsId, classificationId, usernameParam);
   }
 }, []);
 
@@ -559,7 +539,6 @@ const Dashboard: React.FC = () => {
     try {
       console.log("🔥 Loading data from Firebase...");
 
-      // Obtener datos de sessionStorage
       const sessionId = sessionStorage.getItem("session_id");
       const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
       const classificationDocId = sessionStorage.getItem("classification_firebase_id");
@@ -581,10 +560,6 @@ const Dashboard: React.FC = () => {
         throw new Error("No Firebase document IDs found. Please analyze your account first.");
       }
 
-      console.log("📋 Session ID:", sessionId);
-      console.log("📋 Tweets Doc ID:", tweetsDocId);
-      console.log("📋 Classification Doc ID:", classificationDocId);
-
       // Llamar al endpoint para obtener datos de Firebase
       const url = `${API_BASE_URL}/api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`;
       console.log("🌐 Calling URL:", url);
@@ -597,7 +572,6 @@ const Dashboard: React.FC = () => {
       });
 
       console.log("📡 Response status:", response.status);
-      console.log("📡 Response ok:", response.ok);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -623,37 +597,27 @@ const Dashboard: React.FC = () => {
       if (tweetsData?.tweets && Array.isArray(tweetsData.tweets)) {
         tweetsArray = tweetsData.tweets;
         console.log(`📊 Loaded ${tweetsArray.length} tweets from Firebase`);
-      } else {
-        console.warn("⚠️ No tweets array found in tweetsData");
       }
 
       // Procesar usuario
       if (tweetsData?.user_info) {
         tweetsUser = tweetsData.user_info;
         console.log("👤 User info:", tweetsUser);
-      } else {
-        console.warn("⚠️ No user_info found in tweetsData");
       }
 
       // Procesar clasificación
       if (classificationData?.results && Array.isArray(classificationData.results)) {
         detailArray = classificationData.results;
-        console.log(`🛡️ Loaded ${detailArray.length} risk classifications from Firebase`);
-      } else {
-        console.warn("⚠️ No results array found in classificationData");
+        console.log(`🛡️ Loaded ${detailArray.length} risk classifications`);
       }
 
       // Extraer labels del summary
       if (classificationData?.summary?.label_counts) {
         labelsFromSummary = Object.keys(classificationData.summary.label_counts);
-        console.log("🏷️ Labels from summary:", labelsFromSummary);
-      } else {
-        console.warn("⚠️ No label_counts found in summary");
       }
 
       if (detailArray.length > 0) {
         setHadDataInitially(true);
-        console.log("✅ Had data initially set to true");
       }
 
       setRiskItems(detailArray);
@@ -668,15 +632,12 @@ const Dashboard: React.FC = () => {
       });
 
       let labelsToUse = Array.from(uniqueLabelsSet);
-      console.log("🏷️ Unique labels from data:", labelsToUse);
 
       if (labelsToUse.length === 0) {
         if (labelsFromSummary.length > 0) {
           labelsToUse = labelsFromSummary;
-          console.log("🏷️ Using labels from summary:", labelsToUse);
         } else {
           labelsToUse = FIXED_CONTENT_LABELS;
-          console.log("🏷️ Using fixed content labels:", labelsToUse);
         }
       }
 
@@ -687,7 +648,6 @@ const Dashboard: React.FC = () => {
         initialContentFilters[lbl] = true;
       });
       setContentFilters(initialContentFilters);
-      console.log("🏷️ Content filters initialized:", initialContentFilters);
 
       // Configurar usuario
       let userFromConfig = storedUsername || tweetsUser?.username || "username";
@@ -696,15 +656,12 @@ const Dashboard: React.FC = () => {
         userFromConfig = "@" + userFromConfig;
       }
       setUsername(userFromConfig);
-      console.log("👤 Username set to:", userFromConfig);
 
       if (tweetsUser?.username) {
         setProfileHandle(`@${tweetsUser.username}`);
-        console.log("👤 Profile handle:", `@${tweetsUser.username}`);
       }
       if (tweetsUser?.name) {
         setProfileName(tweetsUser.name);
-        console.log("👤 Profile name:", tweetsUser.name);
       }
 
       // Configurar avatar
@@ -717,7 +674,6 @@ const Dashboard: React.FC = () => {
           "https://pbs.twimg.com/profile_images/1967754912487325696/4SlUewFK_400x400.jpg"
         );
       }
-      console.log("🖼️ Avatar URL set");
 
       // Mapear tweets por ID
       const map: Record<string, TweetMeta> = {};
@@ -727,16 +683,19 @@ const Dashboard: React.FC = () => {
         }
       });
       setTweetMetaMap(map);
-      console.log("📊 Tweet meta map created with", Object.keys(map).length, "tweets");
 
       console.log("✅ Dashboard data loaded successfully from Firebase");
       
       // ═══════════════════════════════════════════════════════════════════
-      // 🆕 ENVIAR EMAIL DE NOTIFICACIÓN (NUEVO)
+      // ENVIAR EMAIL SOLO SI ES UNA SESIÓN NORMAL (NO desde URL)
       // ═══════════════════════════════════════════════════════════════════
-      if (detailArray.length > 0) {
+      const isUrlAccess = sessionId?.startsWith('url_');
+      
+      if (detailArray.length > 0 && !isUrlAccess) {
         console.log("📧 Triggering email notification...");
         await sendAnalysisReadyEmail();
+      } else if (isUrlAccess) {
+        console.log("ℹ️  Skipping email (accessed via URL link)");
       }
       // ═══════════════════════════════════════════════════════════════════
       
@@ -744,20 +703,22 @@ const Dashboard: React.FC = () => {
     } catch (e: unknown) {
       console.error("❌ Error loading dashboard data from Firebase:", e);
       if (e instanceof Error) {
-        console.error("❌ Error message:", e.message);
-        console.error("❌ Error stack:", e.stack);
         setError(e.message);
       } else {
-        console.error("❌ Unknown error type:", e);
         setError("Error desconocido");
       }
       setLoading(false);
     }
   };
 
-  loadDataFromFirebase();
+  // Solo ejecutar si NO hay Firebase IDs en la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasFirebaseIds = urlParams.has('tweets_id') && urlParams.has('classification_id');
+  
+  if (!hasFirebaseIds) {
+    loadDataFromFirebase();
+  }
 }, []);
-
   const toggleContentFilter = (label: string) => {
     setContentFilters((prev) => ({
       ...prev,
