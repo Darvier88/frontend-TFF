@@ -159,6 +159,282 @@ const Dashboard: React.FC = () => {
     return counts;
   }, [riskItems, getPostType]);
 
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [deletionProgress, setDeletionProgress] = React.useState("");
+  const [rateLimitRetryAfter, setRateLimitRetryAfter] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (rateLimitRetryAfter > 0) {
+      const interval = setInterval(() => {
+        setRateLimitRetryAfter((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [rateLimitRetryAfter]);
+
+  const handleDeleteFromTwitterAndFirebase = async () => {
+    if (selectedIds.size === 0) {
+      alert("No tweets selected");
+      return;
+    }
+
+    // Verificar si hay rate limit activo
+    if (rateLimitRetryAfter > 0) {
+      const minutes = Math.floor(rateLimitRetryAfter / 60);
+      const seconds = rateLimitRetryAfter % 60;
+      const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+      alert(`⏳ Please wait ${timeStr} before trying again`);
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeletionProgress("Preparing deletion...");
+
+    try {
+      // Obtener datos de sesión
+      const sessionId = sessionStorage.getItem("session_id");
+      const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+
+      console.log("🗑️ Starting deletion process...");
+      console.log("   Session ID:", sessionId);
+      console.log("   Firebase Doc ID:", tweetsDocId);
+      console.log("   Selected tweets:", selectedIds.size);
+
+      if (!sessionId || !tweetsDocId) {
+        throw new Error("Missing session data. Please login again.");
+      }
+
+      // ✅ FIX: Convertir selectedIds a string separado por comas
+      const tweetIdsString = Array.from(selectedIds).join(',');
+      console.log("   Tweet IDs to delete:", tweetIdsString);
+
+      setDeletionProgress(`Deleting ${selectedIds.size} tweets from Twitter...`);
+
+      // Llamar al endpoint de eliminación (OPCIÓN A: Twitter + Firebase)
+      // ✅ FIX: Agregar tweet_ids como parámetro
+      const url = `${API_BASE_URL}/api/tweets/delete?` +
+        `session_id=${sessionId}&` +
+        `firebase_doc_id=${tweetsDocId}&` +
+        `tweet_ids=${encodeURIComponent(tweetIdsString)}&` +  // ← NUEVO
+        `delete_retweets=true&` +
+        `delete_originals=true&` +
+        `delay_seconds=1.0&` +
+        `delete_from_firebase=true`;
+
+      console.log("🌐 Calling API:", url);
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("📡 Response status:", response.status);
+
+      // ✅ MANEJAR RATE LIMIT (429)
+      if (response.status === 429) {
+        const errorData = await response.json();
+        console.warn("⏳ Rate limited:", errorData);
+        
+        const retryAfter = errorData.detail?.retry_after_seconds || 60;
+        setRateLimitRetryAfter(retryAfter);
+        
+        const timeFormatted = errorData.detail?.retry_after_formatted || `${retryAfter}s`;
+        
+        alert(
+          `⏳ Too many requests\n\n` +
+          `Please wait ${timeFormatted} before trying again.\n\n` +
+          `A countdown timer will appear.`
+        );
+        
+        setIsDeleting(false);
+        setDeletionProgress("");
+        setShowConfirmModal(false);
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("❌ API Error:", errorData);
+        throw new Error(errorData.detail || "Failed to delete tweets");
+      }
+
+      const result = await response.json();
+      console.log("✅ Deletion result:", result);
+
+      // Procesar resultado
+      const deletionResult = result.result;
+      const totalDeleted = deletionResult.retweets_deleted + deletionResult.tweets_deleted;
+      const failed = deletionResult.failed || [];
+
+      console.log(`   ✅ Successfully deleted: ${totalDeleted}`);
+      console.log(`   ❌ Failed: ${failed.length}`);
+
+      setDeletionProgress("Updating display...");
+
+      // Actualizar UI: remover tweets eliminados exitosamente
+      if (failed.length > 0) {
+        // Si hay fallidos, mantener solo esos en la UI
+        const failedIds = new Set(
+          failed.map((f: any) => parseInt(f.tweet_id))
+        );
+
+        setRiskItems((prev) =>
+          prev.filter((item) => failedIds.has(item.tweet_id))
+        );
+
+        alert(
+          `⚠️ Partial deletion:\n` +
+          `✅ ${totalDeleted} tweets permanently deleted from Twitter & Firebase\n` +
+          `❌ ${failed.length} tweets failed to delete\n\n` +
+          `The failed tweets remain in your view.`
+        );
+      } else {
+        // Todo exitoso: remover todos los seleccionados
+        setRiskItems((prev) =>
+          prev.filter((item) => !selectedIds.has(item.tweet_id))
+        );
+
+        alert(
+          `✅ Success!\n\n` +
+          `${totalDeleted} tweets permanently deleted from:\n` +
+          `• Twitter/X\n` +
+          `• Firebase Database\n\n` +
+          `This action cannot be undone.`
+        );
+      }
+
+      // Limpiar selección
+      setSelectedIds(new Set());
+      setShowConfirmModal(false);
+      setDeletionProgress("");
+      setIsDeleting(false);
+
+      console.log("✅ Deletion process completed");
+
+    } catch (error) {
+      console.error("❌ Deletion error:", error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Unknown error occurred";
+
+      alert(
+        `❌ Error deleting tweets:\n\n` +
+        `${errorMessage}\n\n` +
+        `Please try again or contact support.`
+      );
+
+      setIsDeleting(false);
+      setDeletionProgress("");
+    }
+  };
+
+  const handleDeleteSingleTweet = async (tweetId: number) => {
+    // Verificar rate limit
+    if (rateLimitRetryAfter > 0) {
+      const minutes = Math.floor(rateLimitRetryAfter / 60);
+      const seconds = rateLimitRetryAfter % 60;
+      const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+      alert(`⏳ Please wait ${timeStr} before trying again`);
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeletionProgress("Deleting tweet...");
+
+    try {
+      const sessionId = sessionStorage.getItem("session_id");
+      const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+
+      console.log("🗑️ Starting single tweet deletion...");
+      console.log("   Tweet ID:", tweetId);
+
+      if (!sessionId || !tweetsDocId) {
+        throw new Error("Missing session data. Please login again.");
+      }
+
+      setDeletionProgress("Deleting tweet from Twitter...");
+
+      // ✅ FIX: Enviar solo el ID del tweet específico
+      const url = `${API_BASE_URL}/api/tweets/delete?` +
+        `session_id=${sessionId}&` +
+        `firebase_doc_id=${tweetsDocId}&` +
+        `tweet_ids=${tweetId}&` +  // ← SOLO ESTE TWEET
+        `delete_retweets=true&` +
+        `delete_originals=true&` +
+        `delay_seconds=1.0&` +
+        `delete_from_firebase=true`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Manejar rate limit
+      if (response.status === 429) {
+        const errorData = await response.json();
+        const retryAfter = errorData.detail?.retry_after_seconds || 60;
+        setRateLimitRetryAfter(retryAfter);
+        
+        const timeFormatted = errorData.detail?.retry_after_formatted || `${retryAfter}s`;
+        alert(`⏳ Too many requests. Please wait ${timeFormatted}`);
+        
+        setIsDeleting(false);
+        setDeletionProgress("");
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to delete tweet");
+      }
+
+      const result = await response.json();
+      const deletionResult = result.result;
+      const failed = deletionResult.failed || [];
+
+      console.log("✅ Single tweet deletion result:", result);
+
+      if (failed.length === 0) {
+        // Eliminación exitosa
+        setRiskItems((prev) =>
+          prev.filter((item) => item.tweet_id !== tweetId)
+        );
+
+        alert("✅ Tweet permanently deleted from Twitter & Firebase");
+      } else {
+        // Falló
+        alert("❌ Failed to delete tweet. Please try again.");
+      }
+
+      setDeletionProgress("");
+      setIsDeleting(false);
+
+    } catch (error) {
+      console.error("❌ Single deletion error:", error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Unknown error occurred";
+
+      alert(`❌ Error deleting tweet:\n\n${errorMessage}`);
+
+      setIsDeleting(false);
+      setDeletionProgress("");
+    }
+  };
+
   // ✅ CARGAR DATOS DESDE FIREBASE
   React.useEffect(() => {
       const loadDataFromFirebase = async () => {
@@ -486,28 +762,14 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSingleRemove = (id: number) => {
-    setRiskItems((prev) => prev.filter((item) => item.tweet_id !== id));
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+    handleDeleteSingleTweet(id);
   };
 
   const nothingToShow =
     !allRemoved && filteredItems.length === 0 && itemsToShow.length === 0;
 
   const handleConfirmRemove = () => {
-    if (selectedIds.size === 0) {
-      setShowConfirmModal(false);
-      return;
-    }
-
-    setRiskItems((prev) =>
-      prev.filter((item) => !selectedIds.has(item.tweet_id))
-    );
-    setSelectedIds(new Set());
-    setShowConfirmModal(false);
+    handleDeleteFromTwitterAndFirebase();
   };
 
   if (loading) {
@@ -788,6 +1050,9 @@ const Dashboard: React.FC = () => {
                   showConfirmModal={showConfirmModal}
                   onOpenConfirmModal={() => setShowConfirmModal(true)}
                   onCloseConfirmModal={() => setShowConfirmModal(false)}
+                  isDeleting={isDeleting}
+                  deletionProgress={deletionProgress}
+                  rateLimitRetryAfter={rateLimitRetryAfter}
                   hasSelection={hasSelection}
                   allSelected={allSelected}
                   selectedIds={selectedIds}

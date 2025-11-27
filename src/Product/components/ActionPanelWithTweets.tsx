@@ -53,6 +53,9 @@ interface ActionPanelWithTweetsProps {
   username: string;
   imageUrl: string;
   nothingToShow: boolean;
+  isDeleting?: boolean;
+  deletionProgress?: string;
+  rateLimitRetryAfter?: number;
 }
 
 const checkboxBoxStyles = {
@@ -146,7 +149,10 @@ const ConfirmModal: React.FC<{
   count: number;
   onCancel: () => void;
   onConfirm: () => void;
-}> = ({ open, count, onCancel, onConfirm }) => {
+  isDeleting?: boolean;
+  deletionProgress?: string;
+  isSingleTweet?: boolean; 
+}> = ({ open, count, onCancel, onConfirm, isDeleting, deletionProgress }) => {
   if (!open) return null;
 
   const noun = count === 1 ? "post" : "posts";
@@ -165,46 +171,124 @@ const ConfirmModal: React.FC<{
         justifyContent: "center",
         zIndex: 9999,
       }}
+      onClick={isDeleting ? undefined : onCancel} 
     >
       <Paper
         elevation={0}
+        onClick={(e) => e.stopPropagation()}
         sx={{
-          width: 420,
+          width: 480,
+          maxWidth: "90vw",
           borderRadius: 3,
           p: 4,
-          textAlign: "center",
           bgcolor: "white",
         }}
         className="modal-config"
       >
-        <Typography
-          fontSize={18}
-          fontWeight={700}
-          sx={{ mb: 1 }}
-          className="confirm-modal"
-        >
-          Confirm permanent action
-        </Typography>
+        {/* Header con ícono de advertencia */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Typography sx={{ fontSize: 28 }}>⚠️</Typography>
+          <Typography
+            fontSize={18}
+            fontWeight={700}
+            className="confirm-modal"
+          >
+            Confirm Permanent Deletion
+          </Typography>
+        </Box>
 
+        {/* Descripción */}
         <Typography
           fontSize={14}
           color="text.secondary"
-          sx={{ mb: 3, whiteSpace: "pre-line" }}
+          sx={{ mb: 2 }}
           className="modal-text"
         >
-          You’re about to remove{" "}
-          <strong>
-            {count} {noun}
-          </strong>
-          .
-          <br />
-          This action can’t be undone.
+          You're about to <strong>permanently delete {count} {noun}</strong> from:
         </Typography>
 
+        {/* Lista de lo que se eliminará */}
+        <Box
+          sx={{
+            bgcolor: "#FFF9E6",
+            border: "1px solid #FFE082",
+            borderRadius: 2,
+            p: 2,
+            mb: 2.5,
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 600, mb: 1 }}>
+            ✓ What will be deleted:
+          </Typography>
+          <Box component="ul" sx={{ m: 0, pl: 2.5, fontSize: 13 }}>
+            <li>
+              <strong>Twitter/X:</strong> Removed from your public profile forever
+            </li>
+            <li>
+              <strong>Firebase Database:</strong> All copies deleted from our servers
+            </li>
+          </Box>
+        </Box>
+
+        {/* Advertencia de irreversibilidad */}
+        <Box
+          sx={{
+            bgcolor: "#FFE5DF",
+            border: "1px solid #AC3516",
+            borderRadius: 2,
+            p: 2,
+            mb: 3,
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#AC3516", mb: 0.5 }}>
+            ⚠️ THIS ACTION CANNOT BE UNDONE
+          </Typography>
+          <Typography sx={{ fontSize: 12, color: "#AC3516" }}>
+            Once deleted, these tweets cannot be recovered by you, Twitter, or us.
+          </Typography>
+        </Box>
+
+        {/* Progress bar durante eliminación */}
+        {isDeleting && (
+          <Box sx={{ mb: 3 }}>
+            <Box
+              sx={{
+                width: "100%",
+                height: 4,
+                bgcolor: "#E0E0E0",
+                borderRadius: 2,
+                overflow: "hidden",
+                mb: 1.5,
+              }}
+            >
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  bgcolor: "#BA4D4B",
+                  animation: "progress 1.5s ease-in-out infinite",
+                  "@keyframes progress": {
+                    "0%": { transform: "translateX(-100%)" },
+                    "100%": { transform: "translateX(100%)" },
+                  },
+                }}
+              />
+            </Box>
+            <Typography sx={{ fontSize: 13, color: "#666", textAlign: "center" }}>
+              {deletionProgress || "Deleting tweets..."}
+            </Typography>
+            <Typography sx={{ fontSize: 11, color: "#999", textAlign: "center", mt: 0.5 }}>
+              Please wait, this may take a few minutes...
+            </Typography>
+          </Box>
+        )}
+
+        {/* Botones */}
         <Stack direction="row" spacing={1.5} justifyContent="center">
           <Button
             variant="outlined"
             onClick={onCancel}
+            disabled={isDeleting}
             sx={{
               borderRadius: 999,
               textTransform: "none",
@@ -215,6 +299,10 @@ const ConfirmModal: React.FC<{
                 bgcolor: "#F3F4F6",
                 borderColor: "#111827",
               },
+              "&:disabled": {
+                borderColor: "#BDBDBD",
+                color: "#BDBDBD",
+              },
             }}
             className="modal-buttons"
           >
@@ -224,22 +312,30 @@ const ConfirmModal: React.FC<{
           <Button
             variant="contained"
             onClick={onConfirm}
+            disabled={isDeleting}
             sx={{
               borderRadius: 999,
               textTransform: "none",
               px: 3,
               bgcolor: "#BA4D4B",
               color: "#fff",
+              "&:hover": {
+                bgcolor: "#A03E3C",
+              },
+              "&:disabled": {
+                bgcolor: "#BDBDBD",
+              },
             }}
             className="modal-buttons"
           >
-            Remove
+            {isDeleting ? "Deleting..." : "Yes, Delete Permanently"}
           </Button>
         </Stack>
       </Paper>
     </Box>
   );
 };
+
 
 const AllRemovedState: React.FC = () => (
   <Box
@@ -343,6 +439,9 @@ const ActionPanelWithTweets: React.FC<ActionPanelWithTweetsProps> = ({
   username,
   imageUrl,
   nothingToShow,
+  isDeleting,
+  deletionProgress,
+  rateLimitRetryAfter,
 }) => {
   const [isAutoLoading, setIsAutoLoading] = React.useState(false);
   const [singleConfirmId, setSingleConfirmId] = React.useState<number | null>(
@@ -359,6 +458,15 @@ const ActionPanelWithTweets: React.FC<ActionPanelWithTweetsProps> = ({
       onConfirmSingleRemove(singleConfirmId);
     }
     setSingleConfirmId(null);
+  };
+
+  const formatRetryTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    }
+    return `${secs}s`;
   };
 
   React.useEffect(() => {
@@ -469,31 +577,57 @@ const ActionPanelWithTweets: React.FC<ActionPanelWithTweetsProps> = ({
               flexShrink: 0,
             }}
           >
-            <Button
-              variant="contained"
-              size="small"
-              className={`action-buttons ${
-                hasSelection ? "action-buttons--danger" : ""
-              }`}
-              onClick={onOpenConfirmModal}
-              sx={{
-                flexGrow: { xs: 1, md: 0 },
-              }}
-            >
-              Remove all
-            </Button>
+            {/* ✅ MOSTRAR COUNTDOWN SI HAY RATE LIMIT */}
+            {rateLimitRetryAfter && rateLimitRetryAfter > 0 ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  px: 2,
+                  py: 1,
+                  bgcolor: "#FFF9E6",
+                  border: "1px solid #FFE082",
+                  borderRadius: 2,
+                  fontSize: 13,
+                }}
+              >
+                <Typography sx={{ fontSize: 16 }}>⏳</Typography>
+                <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+                  Wait {formatRetryTime(rateLimitRetryAfter)} to delete again
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  size="small"
+                  className={`action-buttons ${
+                    hasSelection ? "action-buttons--danger" : ""
+                  }`}
+                  onClick={onOpenConfirmModal}
+                  disabled={isDeleting}
+                  sx={{
+                    flexGrow: { xs: 1, md: 0 },
+                  }}
+                >
+                  {isDeleting ? "Deleting..." : "Remove all"}
+                </Button>
 
-            <Button
-              variant="contained"
-              size="small"
-              className="action-buttons action-buttons--select-all"
-              onClick={onToggleSelectAll}
-              sx={{
-                flexGrow: { xs: 1, md: 0 },
-              }}
-            >
-              {allSelected ? "Un-select all" : "Select all"}
-            </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  className="action-buttons action-buttons--select-all"
+                  onClick={onToggleSelectAll}
+                  disabled={isDeleting}
+                  sx={{
+                    flexGrow: { xs: 1, md: 0 },
+                  }}
+                >
+                  {allSelected ? "Un-select all" : "Select all"}
+                </Button>
+              </>
+            )}
           </Stack>
         )}
       </Box>
@@ -524,6 +658,8 @@ const ActionPanelWithTweets: React.FC<ActionPanelWithTweetsProps> = ({
           count={selectedIds.size}
           onCancel={onCloseConfirmModal}
           onConfirm={handleConfirmRemove}
+          isDeleting={isDeleting}
+          deletionProgress={deletionProgress}
         />
 
         <ConfirmModal
