@@ -24,6 +24,8 @@ import {
 
 const API_BASE_URL = "http://localhost:8080";
 
+
+
 const Dashboard: React.FC = () => {
   const FIXED_CONTENT_LABELS: string[] = [
     "Political sensitive",
@@ -91,6 +93,82 @@ const Dashboard: React.FC = () => {
 
   const isCleanAccount =
     !loading && !error && riskItems.length > 0 && !hasAnyRiskTweet;
+  const validateTokenAndLoadData = async (token: string) => {
+  try {
+    setLoading(true);
+    console.log("🔐 Validating access token...");
+    
+    // Llamar al endpoint de validación
+    const url = `${API_BASE_URL}/api/auth/validate-token?token=${token}`;
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("❌ Token validation failed:", errorData);
+      
+      setError(
+        errorData.detail || 
+        "Invalid or expired link. Please request a new analysis."
+      );
+      setLoading(false);
+      return;
+    }
+    
+    const tokenData = await response.json();
+    console.log("✅ Token validated:", tokenData);
+    
+    // Guardar datos en sessionStorage para que el Dashboard funcione normalmente
+    sessionStorage.setItem("username", tokenData.username);
+    sessionStorage.setItem("tweets_firebase_id", tokenData.tweets_firebase_id);
+    sessionStorage.setItem("classification_firebase_id", tokenData.classification_firebase_id);
+    
+    // Crear un pseudo session_id (no es necesario para autenticación, solo para consistencia)
+    const pseudoSessionId = `token_${Date.now()}`;
+    sessionStorage.setItem("session_id", pseudoSessionId);
+    
+    console.log("💾 Data saved to sessionStorage");
+    console.log("   Username:", tokenData.username);
+    console.log("   Tweets Doc:", tokenData.tweets_firebase_id);
+    console.log("   Classification Doc:", tokenData.classification_firebase_id);
+    
+    // Limpiar el token de la URL (opcional, para que se vea más limpio)
+    window.history.replaceState({}, document.title, "/dashboard");
+    
+    // NO llamar a loadDataFromFirebase() aquí porque el useEffect principal
+    // lo detectará automáticamente cuando vea que sessionStorage tiene datos
+    
+    setLoading(false);
+    
+    // Forzar recarga para que el useEffect principal se ejecute con los nuevos datos
+    window.location.reload();
+    
+  } catch (error) {
+    console.error("❌ Error validating token:", error);
+    
+    setError(
+      error instanceof Error 
+        ? error.message 
+        : "Error validating access link. Please try again."
+    );
+    setLoading(false);
+  }
+};
+ React.useEffect(() => {
+  // Detectar si hay token en la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  
+  if (token) {
+    console.log("🔐 Token detected in URL, validating...");
+    validateTokenAndLoadData(token);
+  }
+}, []);
 
   React.useEffect(() => {
     if (isCleanAccount) {
@@ -434,215 +512,255 @@ const Dashboard: React.FC = () => {
       setDeletionProgress("");
     }
   };
+  const sendAnalysisReadyEmail = async () => {
+  try {
+    const sessionId = sessionStorage.getItem("session_id");
+    const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+    const classificationDocId = sessionStorage.getItem("classification_firebase_id");
+
+    if (!sessionId || !tweetsDocId || !classificationDocId) {
+      console.warn("⚠️ Missing data for email notification, skipping...");
+      return;
+    }
+
+    console.log("📧 Checking if email needs to be sent...");
+
+    const url = `${API_BASE_URL}/api/notifications/send-analysis-ready?` +
+      `session_id=${sessionId}&` +
+      `tweets_firebase_id=${tweetsDocId}&` +
+      `classification_firebase_id=${classificationDocId}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      
+      if (result.already_sent) {
+        console.log("ℹ️ Email was already sent for this analysis");
+        console.log("   Sent at:", result.sent_at);
+      } else {
+        console.log("✅ Email notification sent successfully:", result);
+        console.log("   Recipient:", result.recipient);
+        console.log("   Dashboard link:", result.dashboard_link);
+      }
+    } else {
+      console.warn("⚠️ Failed to send email notification:", response.status);
+    }
+  } catch (error) {
+    console.error("❌ Error sending email notification:", error);
+    // No bloquear el Dashboard si el email falla
+  }
+};
 
   // ✅ CARGAR DATOS DESDE FIREBASE
   React.useEffect(() => {
-      const loadDataFromFirebase = async () => {
-        try {
-          console.log("🔥 Loading data from Firebase...");
+  const loadDataFromFirebase = async () => {
+    try {
+      console.log("🔥 Loading data from Firebase...");
 
-          // Obtener datos de sessionStorage
-          const sessionId = sessionStorage.getItem("session_id");
-          const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
-          const classificationDocId = sessionStorage.getItem("classification_firebase_id");
-          const storedUsername = sessionStorage.getItem("username");
+      // Obtener datos de sessionStorage
+      const sessionId = sessionStorage.getItem("session_id");
+      const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+      const classificationDocId = sessionStorage.getItem("classification_firebase_id");
+      const storedUsername = sessionStorage.getItem("username");
 
-          console.log("📋 SessionStorage values:", {
-            sessionId,
-            tweetsDocId,
-            classificationDocId,
-            storedUsername
-          });
+      console.log("📋 SessionStorage values:", {
+        sessionId,
+        tweetsDocId,
+        classificationDocId,
+        storedUsername
+      });
 
-          // Validar que tenemos los datos necesarios
-          if (!sessionId) {
-            throw new Error("No session ID found. Please login again.");
-          }
+      // Validar que tenemos los datos necesarios
+      if (!sessionId) {
+        throw new Error("No session ID found. Please login again.");
+      }
 
-          if (!tweetsDocId || !classificationDocId) {
-            throw new Error("No Firebase document IDs found. Please analyze your account first.");
-          }
+      if (!tweetsDocId || !classificationDocId) {
+        throw new Error("No Firebase document IDs found. Please analyze your account first.");
+      }
 
-          console.log("📋 Session ID:", sessionId);
-          console.log("📋 Tweets Doc ID:", tweetsDocId);
-          console.log("📋 Classification Doc ID:", classificationDocId);
+      console.log("📋 Session ID:", sessionId);
+      console.log("📋 Tweets Doc ID:", tweetsDocId);
+      console.log("📋 Classification Doc ID:", classificationDocId);
 
-          // Llamar al endpoint para obtener datos de Firebase
-          const url = `${API_BASE_URL}/api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`;
-          console.log("🌐 Calling URL:", url);
+      // Llamar al endpoint para obtener datos de Firebase
+      const url = `${API_BASE_URL}/api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`;
+      console.log("🌐 Calling URL:", url);
 
-          const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-          console.log("📡 Response status:", response.status);
-          console.log("📡 Response ok:", response.ok);
+      console.log("📡 Response status:", response.status);
+      console.log("📡 Response ok:", response.ok);
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error("❌ Error response:", errorData);
-            throw new Error(errorData.detail || "Error loading data from Firebase");
-          }
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("❌ Error response:", errorData);
+        throw new Error(errorData.detail || "Error loading data from Firebase");
+      }
 
-          const firebaseData = await response.json();
-          console.log("✅ Data loaded from Firebase:", firebaseData);
-          
-          // ✅ CORRECCIÓN: Usar la estructura correcta
-          // Backend devuelve: data.tweets y data.classification
-          // NO data.tweets_data y data.classification_data
-          const tweetsData = firebaseData.data?.tweets;
-          const classificationData = firebaseData.data?.classification;
+      const firebaseData = await response.json();
+      console.log("✅ Data loaded from Firebase:", firebaseData);
+      
+      const tweetsData = firebaseData.data?.tweets;
+      const classificationData = firebaseData.data?.classification;
 
-          console.log("📊 tweetsData:", tweetsData);
-          console.log("🛡️ classificationData:", classificationData);
+      console.log("📊 tweetsData:", tweetsData);
+      console.log("🛡️ classificationData:", classificationData);
 
-          let detailArray: RiskItem[] = [];
-          let tweetsArray: TweetMeta[] = [];
-          let tweetsUser: any = undefined;
-          let labelsFromSummary: string[] = [];
+      let detailArray: RiskItem[] = [];
+      let tweetsArray: TweetMeta[] = [];
+      let tweetsUser: any = undefined;
+      let labelsFromSummary: string[] = [];
 
-          // Procesar tweets
-          if (tweetsData?.tweets && Array.isArray(tweetsData.tweets)) {
-            tweetsArray = tweetsData.tweets;
-            console.log(`📊 Loaded ${tweetsArray.length} tweets from Firebase`);
-            console.log("📊 First tweet:", tweetsArray[0]);
-          } else {
-            console.warn("⚠️ No tweets array found in tweetsData");
-          }
+      // Procesar tweets
+      if (tweetsData?.tweets && Array.isArray(tweetsData.tweets)) {
+        tweetsArray = tweetsData.tweets;
+        console.log(`📊 Loaded ${tweetsArray.length} tweets from Firebase`);
+      } else {
+        console.warn("⚠️ No tweets array found in tweetsData");
+      }
 
-          // Procesar usuario
-          if (tweetsData?.user_info) {
-            tweetsUser = tweetsData.user_info;
-            console.log("👤 User info:", tweetsUser);
-          } else {
-            console.warn("⚠️ No user_info found in tweetsData");
-          }
+      // Procesar usuario
+      if (tweetsData?.user_info) {
+        tweetsUser = tweetsData.user_info;
+        console.log("👤 User info:", tweetsUser);
+      } else {
+        console.warn("⚠️ No user_info found in tweetsData");
+      }
 
-          // Procesar clasificación
-          if (classificationData?.results && Array.isArray(classificationData.results)) {
-            detailArray = classificationData.results;
-            console.log(`🛡️ Loaded ${detailArray.length} risk classifications from Firebase`);
-            console.log("🛡️ First classification item:", detailArray[0]);
-            console.log("🛡️ Risk levels:", detailArray.map(item => item.risk_level));
-            console.log("🛡️ Labels:", detailArray.map(item => item.labels));
-          } else {
-            console.warn("⚠️ No results array found in classificationData");
-          }
+      // Procesar clasificación
+      if (classificationData?.results && Array.isArray(classificationData.results)) {
+        detailArray = classificationData.results;
+        console.log(`🛡️ Loaded ${detailArray.length} risk classifications from Firebase`);
+      } else {
+        console.warn("⚠️ No results array found in classificationData");
+      }
 
-          // Extraer labels del summary
-          if (classificationData?.summary?.label_counts) {
-            labelsFromSummary = Object.keys(classificationData.summary.label_counts);
-            console.log("🏷️ Labels from summary:", labelsFromSummary);
-          } else {
-            console.warn("⚠️ No label_counts found in summary");
-          }
+      // Extraer labels del summary
+      if (classificationData?.summary?.label_counts) {
+        labelsFromSummary = Object.keys(classificationData.summary.label_counts);
+        console.log("🏷️ Labels from summary:", labelsFromSummary);
+      } else {
+        console.warn("⚠️ No label_counts found in summary");
+      }
 
-          if (detailArray.length > 0) {
-            setHadDataInitially(true);
-            console.log("✅ Had data initially set to true");
-          }
+      if (detailArray.length > 0) {
+        setHadDataInitially(true);
+        console.log("✅ Had data initially set to true");
+      }
 
-          setRiskItems(detailArray);
-          setVisibleCount(PAGE_SIZE);
+      setRiskItems(detailArray);
+      setVisibleCount(PAGE_SIZE);
 
-          // Extraer labels únicos
-          const uniqueLabelsSet = new Set<string>();
-          detailArray.forEach((item) => {
-            if (Array.isArray(item.labels)) {
-              item.labels.forEach((lbl) => uniqueLabelsSet.add(String(lbl)));
-            }
-          });
-
-          let labelsToUse = Array.from(uniqueLabelsSet);
-          console.log("🏷️ Unique labels from data:", labelsToUse);
-
-          if (labelsToUse.length === 0) {
-            if (labelsFromSummary.length > 0) {
-              labelsToUse = labelsFromSummary;
-              console.log("🏷️ Using labels from summary:", labelsToUse);
-            } else {
-              labelsToUse = FIXED_CONTENT_LABELS;
-              console.log("🏷️ Using fixed content labels:", labelsToUse);
-            }
-          }
-
-          setContentLabels(labelsToUse);
-
-          const initialContentFilters: Record<string, boolean> = {};
-          labelsToUse.forEach((lbl) => {
-            initialContentFilters[lbl] = true;
-          });
-          setContentFilters(initialContentFilters);
-          console.log("🏷️ Content filters initialized:", initialContentFilters);
-
-          // Configurar usuario
-          let userFromConfig = storedUsername || tweetsUser?.username || "username";
-
-          if (!userFromConfig.startsWith("@")) {
-            userFromConfig = "@" + userFromConfig;
-          }
-          setUsername(userFromConfig);
-          console.log("👤 Username set to:", userFromConfig);
-
-          if (tweetsUser?.username) {
-            setProfileHandle(`@${tweetsUser.username}`);
-            console.log("👤 Profile handle:", `@${tweetsUser.username}`);
-          }
-          if (tweetsUser?.name) {
-            setProfileName(tweetsUser.name);
-            console.log("👤 Profile name:", tweetsUser.name);
-          }
-
-          // Configurar avatar
-          if (tweetsUser?.avatar_url) {
-            setImageUrl(tweetsUser.avatar_url);
-          } else if (tweetsUser?.profile_image_url) {
-            setImageUrl(tweetsUser.profile_image_url);
-          } else {
-            setImageUrl(
-              "https://pbs.twimg.com/profile_images/1967754912487325696/4SlUewFK_400x400.jpg"
-            );
-          }
-          console.log("🖼️ Avatar URL set");
-
-          // Mapear tweets por ID
-          const map: Record<string, TweetMeta> = {};
-          tweetsArray.forEach((t) => {
-            if (t && t.id) {
-              map[String(t.id)] = t;
-            }
-          });
-          setTweetMetaMap(map);
-          console.log("📊 Tweet meta map created with", Object.keys(map).length, "tweets");
-
-          console.log("✅ Dashboard data loaded successfully from Firebase");
-          console.log("📊 Final state:", {
-            riskItemsCount: detailArray.length,
-            tweetsCount: tweetsArray.length,
-            contentLabels: labelsToUse,
-            username: userFromConfig,
-            hadDataInitially: detailArray.length > 0
-          });
-          setLoading(false);
-        } catch (e: unknown) {
-          console.error("❌ Error loading dashboard data from Firebase:", e);
-          if (e instanceof Error) {
-            console.error("❌ Error message:", e.message);
-            console.error("❌ Error stack:", e.stack);
-            setError(e.message);
-          } else {
-            console.error("❌ Unknown error type:", e);
-            setError("Error desconocido");
-          }
-          setLoading(false);
+      // Extraer labels únicos
+      const uniqueLabelsSet = new Set<string>();
+      detailArray.forEach((item) => {
+        if (Array.isArray(item.labels)) {
+          item.labels.forEach((lbl) => uniqueLabelsSet.add(String(lbl)));
         }
-      };
+      });
 
-      loadDataFromFirebase();
-    }, []);
+      let labelsToUse = Array.from(uniqueLabelsSet);
+      console.log("🏷️ Unique labels from data:", labelsToUse);
+
+      if (labelsToUse.length === 0) {
+        if (labelsFromSummary.length > 0) {
+          labelsToUse = labelsFromSummary;
+          console.log("🏷️ Using labels from summary:", labelsToUse);
+        } else {
+          labelsToUse = FIXED_CONTENT_LABELS;
+          console.log("🏷️ Using fixed content labels:", labelsToUse);
+        }
+      }
+
+      setContentLabels(labelsToUse);
+
+      const initialContentFilters: Record<string, boolean> = {};
+      labelsToUse.forEach((lbl) => {
+        initialContentFilters[lbl] = true;
+      });
+      setContentFilters(initialContentFilters);
+      console.log("🏷️ Content filters initialized:", initialContentFilters);
+
+      // Configurar usuario
+      let userFromConfig = storedUsername || tweetsUser?.username || "username";
+
+      if (!userFromConfig.startsWith("@")) {
+        userFromConfig = "@" + userFromConfig;
+      }
+      setUsername(userFromConfig);
+      console.log("👤 Username set to:", userFromConfig);
+
+      if (tweetsUser?.username) {
+        setProfileHandle(`@${tweetsUser.username}`);
+        console.log("👤 Profile handle:", `@${tweetsUser.username}`);
+      }
+      if (tweetsUser?.name) {
+        setProfileName(tweetsUser.name);
+        console.log("👤 Profile name:", tweetsUser.name);
+      }
+
+      // Configurar avatar
+      if (tweetsUser?.avatar_url) {
+        setImageUrl(tweetsUser.avatar_url);
+      } else if (tweetsUser?.profile_image_url) {
+        setImageUrl(tweetsUser.profile_image_url);
+      } else {
+        setImageUrl(
+          "https://pbs.twimg.com/profile_images/1967754912487325696/4SlUewFK_400x400.jpg"
+        );
+      }
+      console.log("🖼️ Avatar URL set");
+
+      // Mapear tweets por ID
+      const map: Record<string, TweetMeta> = {};
+      tweetsArray.forEach((t) => {
+        if (t && t.id) {
+          map[String(t.id)] = t;
+        }
+      });
+      setTweetMetaMap(map);
+      console.log("📊 Tweet meta map created with", Object.keys(map).length, "tweets");
+
+      console.log("✅ Dashboard data loaded successfully from Firebase");
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // 🆕 ENVIAR EMAIL DE NOTIFICACIÓN (NUEVO)
+      // ═══════════════════════════════════════════════════════════════════
+      if (detailArray.length > 0) {
+        console.log("📧 Triggering email notification...");
+        await sendAnalysisReadyEmail();
+      }
+      // ═══════════════════════════════════════════════════════════════════
+      
+      setLoading(false);
+    } catch (e: unknown) {
+      console.error("❌ Error loading dashboard data from Firebase:", e);
+      if (e instanceof Error) {
+        console.error("❌ Error message:", e.message);
+        console.error("❌ Error stack:", e.stack);
+        setError(e.message);
+      } else {
+        console.error("❌ Unknown error type:", e);
+        setError("Error desconocido");
+      }
+      setLoading(false);
+    }
+  };
+
+  loadDataFromFirebase();
+}, []);
 
   const toggleContentFilter = (label: string) => {
     setContentFilters((prev) => ({
