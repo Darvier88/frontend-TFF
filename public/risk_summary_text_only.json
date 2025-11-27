@@ -13,6 +13,7 @@
   "labels": {
     "political_sensitivity": 5,
     "toxic": 13,
-    "bullying": 1
+    "legal_privacy": 2,
+    "hate": 1
   }
 }

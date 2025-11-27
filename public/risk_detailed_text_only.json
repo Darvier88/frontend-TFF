@@ -2,14 +2,166 @@
   "resultados": [
     {
       "labels": [
+        "political_sensitivity"
+      ],
+      "risk_level": "mid",
+      "rationale": "Mención de desinformación política sin extremismo evidente",
+      "spans": [
+        {
+          "text": "LA PEOR DESINFORMACIÓN",
+          "start": 24,
+          "end": 46,
+          "label": "political_sensitivity"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 1,
+      "text": "Y además para no caer en LA PEOR DESINFORMACIÓN, sé que estos streamers estaban simultáneamente en Twitch y Kick. Eso en principio *justificaría* que su público se quedase en Kick.\n\nPero igualmente es incomprensible no llegar ni a 1K de personas en Twitch. Hablamos de gente"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Uso de lenguaje despectivo hacia una plataforma sin atacar a personas o grupos específicos.",
+      "spans": [
+        {
+          "text": "mierda",
+          "start": 27,
+          "end": 32,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 2,
+      "text": "El estado actual de Twitch es mierda. Ojalá Kick fuese realmente una buena alternativa, pero está claro que no es serio."
+    },
+    {
+      "labels": [
+        "legal_privacy"
+      ],
+      "risk_level": "high",
+      "rationale": "Contenido que puede contener PII sensible",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 3,
+      "text": "https://t.co/ymHCgftAwg https://t.co/NHEh9pSYKA"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 4,
+      "text": "RT @NezukoSocial: https://t.co/zHHnX7R7yu"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido sin riesgo identificado",
+      "spans": [],
+      "confidence": 0.0,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 5,
+      "text": "RT @zassyoku_DD: 🌱 https://t.co/3wLmfwN30z"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No hay contenido ofensivo ni sensible en el tweet.",
+      "spans": [],
+      "confidence": 0.0,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 6,
+      "text": "RT @monaka_tanemaki: https://t.co/sjrCFZPcNM"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 7,
+      "text": "RT @LoganPaul: I’m tired of these outsiders thinking they can just become YouTubers"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 8,
+      "text": "RT @kakyoriya: GOD\n#Phainon https://t.co/mpSqMC5X7Y"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Comentario neutro sin contenido ofensivo",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 9,
+      "text": "@DextraG07 Yo pagaba por ver esto eh"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Cita y sarcasmo evidente, no hay contenido ofensivo",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 10,
+      "text": "@DionGn12 Y se nota muchísimo, el primer acto es literalmente como ver a la Legión de Reconocimiento de SNK jajaja\n\n\"por los que vendrán después\"=\"entregad vuestros corazones\""
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido literario sin insultos ni ataques",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 11,
+      "text": "Y mi otra favorita es esta, me destruye cada vez que la leo:\n\n\"La primera vez que te vi, también fue la última.\" https://t.co/Q17a5qrxnO"
+    },
+    {
+      "labels": [
         "toxic"
       ],
       "risk_level": "low",
-      "rationale": "Uso de sarcasmo y referencia a pecados sin insultos directos",
+      "rationale": "Cita con sarcasmo evidente, no hay insultos directos",
       "spans": [
         {
-          "text": "mis pecados también son muy graves",
-          "start": 75,
+          "text": "escultor fracasado",
+          "start": 88,
           "end": 106,
           "label": "toxic"
         }
@@ -18,87 +170,26 @@
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 16,
-      "text": "Igual yo supuestamente inventé el hate a Jujutsu, BnHa, Black Clover, Chainsaw Man, Frieren(?), Takopi, HxH y muchos más dependiendo del esquizofrénico al que le preguntes.\n\nAsí que mis pecados también son muy graves. Nos veremos en el infierno, Beelce. https://t.co/lepYAngj3F"
-    },
-    {
-      "labels": [
-        "political_sensitivity","toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Comentario sobre figuras públicas con tono crítico, pero sin insultos directos ni deshumanización.",
-      "spans": [
-        {
-          "text": "Sus acciones y comentarios dañaron la reputación del mejor de todos los tiempos",
-          "start": 41,
-          "end": 89,
-          "label": "political_sensitivity"
-        }
-      ],
-      "confidence": 0.75,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 17,
-      "text": "Entre Beelce y Perico, efectivamente. Eso es una realidad absoluta.\n\nSus acciones y comentarios dañaron la reputación del mejor de todos los tiempos durante años, pero bueno hay que quererlos igual. https://t.co/cINEekzAfe https://t.co/IPvjc8itt0"
+      "tweet_id": 12,
+      "text": "\"No voy a cambiar, pero admitiré esto: esas doce piedras sin pulir son diez mil veces más refinadas que cualquier estatua; es como si se burlasen de mí, un escultor fracasado.\" https://t.co/05ngA8U66c https://t.co/G90kjQWLO9"
     },
     {
       "labels": [
         "toxic"
       ],
       "risk_level": "low",
-      "rationale": "Pregunta despectiva sin insultos directos",
+      "rationale": "Insulto implícito pero no directo",
       "spans": [
         {
-          "text": "muerta",
+          "text": "pecado",
           "start": 24,
           "end": 30,
           "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 27,
-      "text": "@yoko777117 @Bardopacotilla Quién es la muerta?"
-    },
-    {
-      "labels": [
-        "political_sensitivity"
-      ],
-      "risk_level": "mid",
-      "rationale": "Crítica a la política de la empresa, pero sin extremismo ni desinformación clara",
-      "spans": [
-        {
-          "text": "CEO de Twitch",
-          "start": 16,
-          "end": 27
         },
         {
-          "text": "más de la mitad del dinero",
-          "start": 56,
-          "end": 82
-        }
-      ],
-      "confidence": 0.75,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 33,
-      "text": "\"Escucha bien, CEO de Twitch. Este grito viene de todas tus creaciones abandonadas...\n\nEn 2022, vi como por cada suscripción vuestra empresa se llevaba más de la mitad del dinero de los donantes. Presencié como la gente compraba bits para apoyarme aún sabiendo que un gran https://t.co/6OdI6uUp2f"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Uso de sarcasmo y humor en el contexto",
-      "spans": [
-        {
-          "text": "reciben mucho hate",
-          "start": 56,
-          "end": 73,
+          "text": "francés",
+          "start": 41,
+          "end": 48,
           "label": "toxic"
         }
       ],
@@ -106,138 +197,109 @@
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 36,
-      "text": "Dominik es como Boruto.\n\nHijo de Naruto (Rey Misterio), pero prefiere ser como Sasuke (Eddie Guerrero).\n\nY los dos reciben mucho hate jajaja https://t.co/XQt6U3IvNM"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Cita y sarcasmo evidente, no hay insultos directos",
-      "spans": [
-        {
-          "text": "pienso que eres hermosa",
-          "start": 48,
-          "end": 70,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 40,
-      "text": "RT @TheDarkraimola: \"La verdadera razón por la que acabé siendo de esta manera fue...\n\nPorque pienso que eres hermosa. Eso es todo...\"\n\n✍️🔥…"
-    },
-    {
-      "labels": [
-        "political_sensitivity"
-      ],
-      "risk_level": "mid",
-      "rationale": "Comentario sobre eventos en plataformas de streaming con tono de desilusión, pero sin extremismo evidente.",
-      "spans": [
-        {
-          "text": "Ya no importa nada.",
-          "start": 34,
-          "end": 50,
-          "label": "political_sensitivity"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 54,
-      "text": "En Kick retransmitieron la muerte de una persona y en Twitch el nacimiento de otra.\n\nYa no importa nada. https://t.co/1n2L6U7ZpS"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Comentario sarcástico sin insultos directos",
-      "spans": [
-        {
-          "text": "vigilarme entre minita y minita",
-          "start": 34,
-          "end": 63,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 59,
-      "text": "@soymatt_ Tienes tiempo para vigilarme entre minita y minita?"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "El comentario refleja una opinión personal sin insultos directos ni deshumanización.",
-      "spans": [
-        {
-          "text": "tirándome hate",
-          "start": 54,
-          "end": 69,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 60,
-      "text": "@OneEyedGuille @Jamke0820 @CarlitoBurner77 Pero que piensen de mí lo que quieran, nunca fue mi intención caerle bien a todo el mundo ni mucho menos a los fans de las obras que critico.\n\nEl problema es que me pareció  surrealista que tras TODOS esos comentarios tirándome hate, aún así quisieran dejarme mal diciendo que no"
+      "tweet_id": 13,
+      "text": "El único pecado de Expegoty 33 es ser francés."
     },
     {
       "labels": [
         "toxic",
-        "bullying"
+        "hate"
       ],
-      "risk_level": "mid",
-      "rationale": "Insulto y acoso persistente, pero con sarcasmo evidente",
+      "risk_level": "high",
+      "rationale": "Insulto y deshumanización hacia un grupo protegido",
       "spans": [
         {
-          "text": "insultarme una vez, dos, tres...pero decenas?",
-          "start": 20,
-          "end": 56,
+          "text": "ORGULLOSO español cuck amante de los moros",
+          "start": 18,
+          "end": 49,
           "label": "toxic"
         },
         {
-          "text": "estoy resentido por 20 xd",
-          "start": 104,
-          "end": 126,
-          "label": "toxic"
+          "text": "panchito tercermundista",
+          "start": 56,
+          "end": 78,
+          "label": "hate"
         }
       ],
-      "confidence": 0.75,
+      "confidence": 0.85,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 61,
-      "text": "@Jamke0820 @OneEyedGuille @CarlitoBurner77 Hombre, está bien insultarme una vez, dos, tres...pero decenas?\n\nLo que me llamó la atención aquí fue la cantidad jajaja \n\nEso y que me acusaban de estar resentido por un comentario. Y no, yo estoy resentido por 20 xd"
+      "tweet_id": 14,
+      "text": "@madrefoka_ Tú eres un ORGULLOSO español cuck amante de los moros, del FFVII y del PSOE..\no un panchito tercermundista?\n\nPues ya está."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos protegidos.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 15,
+      "text": "Últimamente me salen muchos posts sobre Expedition 33 que están al mismo nivel de alucinada que cuando se decía que Jujutsu era el shonen más revolucionario de la historia, mejor que Naruto, SnK, HxH y demás (xdddd)\n\nMe da pena porque en este caso Expedition sí que es un https://t.co/UbNKT1s472"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido sin riesgo identificado, solo un retweet con un enlace y texto en japonés.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 16,
+      "text": "RT @NATSUKAZEREI: 星キュレ\n#スターレイル https://t.co/IS4BmKm0Ns"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 17,
+      "text": "RT @pizza202020: https://t.co/UiSynMcEC7"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 18,
+      "text": "@Fyron01 Ya hay nueva actualización de historia también?"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido humorístico y sin insultos",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 19,
+      "text": "Durísimo hermano. \n\nPor cierto, me encanta esta nueva función de YouTube jajaja https://t.co/9Eah5elsq4"
     },
     {
       "labels": [
+        "political_sensitivity",
         "toxic"
       ],
       "risk_level": "mid",
-      "rationale": "Insultos y sarcasmo evidente, pero no deshumanización ni ataques directos.",
+      "rationale": "Uso de términos despectivos y referencia política, pero no hay incitación a violencia ni deshumanización clara.",
       "spans": [
         {
-          "text": "insultar",
-          "start": 52,
-          "end": 59,
-          "label": "toxic"
-        },
-        {
-          "text": "ego fragil",
-          "start": 106,
-          "end": 117,
+          "text": "furrocomunista",
+          "start": 47,
+          "end": 62,
           "label": "toxic"
         }
       ],
@@ -245,299 +307,125 @@
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 69,
-      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Pues si we, porque te lo tomaste a mal y me empezaste a insultar xd\n\nPero bueno, culpa mía por hablar con alguien que desde el minuto 1 ya había dejado claro que yo le caía mal.\n\nMe vas a acusar de tener el ego fragil otra vez o podemos dejarlo aquí? https://t.co/l2IkYqrejR"
+      "tweet_id": 20,
+      "text": "@pechuga272120 Ya ves, a este el PSOE le quedaba a la derecha.\n\nUn auténtico furrocomunista de los que ya no quedan. https://t.co/5Wfh6OSJNY"
     },
     {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Crítica personal sin insultos directos ni lenguaje denigrante",
-      "spans": [
-        {
-          "text": "hater",
-          "start": 90,
-          "end": 95,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No hay contenido ofensivo ni sensible en el tweet.",
+      "spans": [],
+      "confidence": 0.95,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 70,
-      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 1. Veo a un tipo diciendo que no le gusta mi contenido.\n\n2. Entro a su perfil a ver si descubro el porqué (Suelo hacerlo cuando veo críticas contra mi o mi canal, ya que  si el \"hater\" en cuestión es fan de BnHa/Jujutsu/BC, etc. pues ya entiendo cuál es el problema conmigo."
+      "tweet_id": 21,
+      "text": "@TooruJoestar Nah, no estoy de acuerdo. Cómo analista creo que Quetzal es mejor."
     },
     {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Uso de sarcasmo evidente y no hay insultos directos",
-      "spans": [
-        {
-          "text": "FUESE TAN OBVIO",
-          "start": 56,
-          "end": 71,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Cita y sarcasmo evidente, no hay insultos ni ataques directos.",
+      "spans": [],
+      "confidence": 0.85,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 71,
-      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Y porque a mí me hizo gracia que el motivo de que te cayese mal FUESE TAN OBVIO xD: https://t.co/YQ3nMaj5SJ"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Uso de sarcasmo y no hay insultos directos graves.",
-      "spans": [
-        {
-          "text": "insultaste",
-          "start": 49,
-          "end": 59,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 74,
-      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Me lo tomé en serio cuando después de señalar lo curiosa que me parecía tu foto...ME INSULTASTE A MÍ Y A ZROLY xD\n\nFuiste tú el que se lo tomó en serio. Pero ya está, déjalo."
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Expresión de opiniones personales sin insultos directos",
-      "spans": [
-        {
-          "text": "gente a la que no le caigo bien",
-          "start": 56,
-          "end": 34,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 75,
-      "text": "@Paolo1276789500 @ezflarenze @si6568723994531 Que no fue porque me doliese xdd \n\nYa te dije que fue porque me hizo gracia. He conocido gente a la que no le caigo bien porque son fans de BnHa, gente a la que no le caigo bien por mis opiniones de Jujutsu, gente que me odia por lo que dije de Black Clover...\n\nY TÚ LOS TENIAS A"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Defensa personal ante un insulto, sin lenguaje denigrante severo",
-      "spans": [
-        {
-          "text": "grano de arena",
-          "start": 24,
-          "end": 37,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 76,
-      "text": "@Paolo1276789500 @si6568723994531 Ni tú eres un grano de arena ni yo soy más de uno. Somos seres humanos, los dos. \n\nY por eso si veo un comentario tuyo que me llama la atención, puedo responderte. Y si me insultas, es lógico que me defienda. \n\nNo hay nada de raro en eso."
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Insulto indirecto y lenguaje despectivo hacia una persona específica.",
-      "spans": [
-        {
-          "text": "papeador",
-          "start": 90,
-          "end": 98,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.75,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 79,
-      "text": "@Paolo1276789500 @si6568723994531 Claro porque si me insultas, como hace el otro tipo, me tengo que quedar callado. Es lo que tenemos que hacer los youtubers, es verdad.\n\nNo tenemos derecho a defendernos porque si lo hacemos estamos mostrando que \"nos dañaron el ego\".\n\nTú ganas Paolo, eres todo un papeador."
+      "tweet_id": 22,
+      "text": "@Kurapika_EX Es que independientemente de sus ideas políticas, como analista literario el tipo controla muchísimo.\n\nUna prueba más de que las personas somos matices jajaja"
     },
     {
       "labels": [
         "political_sensitivity"
       ],
-      "risk_level": "low",
-      "rationale": "Uso de sarcasmo y crítica política sin ataques directos",
+      "risk_level": "mid",
+      "rationale": "Referencias a ideologías políticas sin insultos directos",
       "spans": [
         {
-          "text": "Todo tiene su público",
+          "text": "furro, comunista, zurdo, progre, kukardo y wekereke",
           "start": 0,
-          "end": 20,
+          "end": 43,
           "label": "political_sensitivity"
-        },
-        {
-          "text": "critiqué a los que tiene en la portada",
-          "start": 36,
-          "end": 70,
-          "label": "political_sensitivity"
-        },
-        {
-          "text": "opinión política o por mi gusto musical",
-          "start": 78,
-          "end": 113,
-          "label": "political_sensitivity"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 80,
-      "text": "@si6568723994531 Todo tiene su público. Y bueno, sí, dale, SEGURO que no está enfadado conmigo por alguna vez de las que critiqué a los que tiene en la portada xD\n\nSeguro que es por mi opinión política o por mi gusto musical jajaja"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Insulto y sarcasmo evidente en el contexto de la discusión",
-      "spans": [
-        {
-          "text": "insultar",
-          "start": 60,
-          "end": 67,
-          "label": "toxic"
-        },
-        {
-          "text": "ofendido",
-          "start": 117,
-          "end": 125,
-          "label": "toxic"
         }
       ],
       "confidence": 0.75,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 82,
-      "text": "@Paolo1276789500 @si6568723994531 Yo solo usé tu portada para apuntar a qué con razón no te gustaba mi contenido. Tú fuiste el primero insultar [a mí y a Zroly, por algún motivo jajaja]\n\nNo quiero disculpas ni nada, pero tampoco te hagas tú el ofendido, que la discusión la iniciaste tú jajaja"
+      "tweet_id": 23,
+      "text": "Era furro, comunista, zurdo, progre, kukardo y wekereke.\n\nPero allá va el tipo con uno de los mejores análisis sobre Griffith que se han hecho. https://t.co/yx5Sp7AGFE https://t.co/Ju7YjOCutq"
     },
     {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Crítica a contenido sin insultos directos ni deshumanización",
-      "spans": [
-        {
-          "text": "hatea los spaghettis y las hamburguesas",
-          "start": 70,
-          "end": 104,
-          "label": "toxic"
-        }
-      ],
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido sin riesgo evidente, solo un retweet con un emoji y un enlace.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 24,
+      "text": "RT @thesecond1372: 💕 https://t.co/8UPaw8YTzU"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Enlace compartido sin contenido adicional que indique riesgo",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 25,
+      "text": "RT @mechimun_JOJO: https://t.co/VDOIW1U648"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido humorístico sin insultos ni ataques",
+      "spans": [],
+      "confidence": 0.2,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 26,
+      "text": "@GearFiveOP Jsjsjsjsjsjs\n\n*48 HORAS SIN ONE PIECE*"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 27,
+      "text": "@GearFiveOP Fuah, podíamos seguir con el flashback de Loki y que fuesen otros 150."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido no ofensivo y sin riesgo identificado",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 28,
+      "text": "RT @114gen0922: マキマさん\n\nphoto📸 @b3c_OC https://t.co/tWGWiYRijW"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni amenazas.",
+      "spans": [],
       "confidence": 0.65,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
-      "tweet_id": 83,
-      "text": "@si6568723994531 Truvix si tú comida favorita son los spaghettis y las hamburguesas, es lógico que el youtuber que hatea los spaghettis y las hamburguesas no te guste.\n\nEs el caso de Paolo, que anda criticando mi contenido cuando mi contenido se basa en todo lo contrario de lo que (al parecer) le"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Cita y sarcasmo evidente, no hay insultos directos",
-      "spans": [
-        {
-          "text": "no te ESTABA insultando",
-          "start": 40,
-          "end": 62,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 86,
-      "text": "@si6568723994531 @Paolo1276789500 Si, tienes razón. La frase correcta ahí era \"yo no te ESTABA insultando\" y eso es cierto. Pero ya  que el se dio por atacado, pues que así sea 😵‍💫"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Uso de lenguaje despectivo hacia un grupo sin deshumanización explícita.",
-      "spans": [
-        {
-          "text": "puta madre",
-          "start": 56,
-          "end": 66,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.75,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 87,
-      "text": "@Jos42358656 @OneEyedGuille @LorenaRokuhira @CarlitoBurner77 Es muy posible. De los fandoms más \"resentidos\" con los que me he cruzado.\n\nMira que llevo meses sin decir nada del Deku y su puta madre y cada cierto tiempo salen a llorar. \n\nY, siendo honestos, con BnHa no me metí ni la mitad que con Jujutsu, One Piece, Chainsaw Man o Black"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Insulto implícito a gustos personales",
-      "spans": [
-        {
-          "text": "putear a esas obras",
-          "start": 85,
-          "end": 105,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.75,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 88,
-      "text": "@Paolo1276789500 @si6568723994531 Yo no te estoy insultando ni criticando tus gustos (aunque sí, ya que lo dices, me parecen terribles). Sólo apuntaba que es normal que mi contenido que muchas veces se basa en putear a esas obras no sea de tu agrado. Lógico, no?"
-    },
-    {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Uso de sarcasmo y referencia a insultos previos sin lenguaje denigrante directo",
-      "spans": [
-        {
-          "text": "resentido",
-          "start": 66,
-          "end": 74,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
-      "attempt": 1,
-      "finish_reason": "stop",
-      "policy_applied": "sin cambios",
-      "tweet_id": 89,
-      "text": "@rodbeingshy @goge59472 @SamAnima07 Dejando de lado sus obsesiones, esto empezó porque me estaban llamando resentido por no querer ver sus vídeos (que encima mi compa resulta que es YouTuber de anime también, vaya huevos jajaja) porque \"me había insultado una vez\". \n\nY solo quería mostrar que fueron muchas más que"
+      "tweet_id": 29,
+      "text": "@PutuPauu Ahora ya sabes que las Umas no son simplemente un juego. \n\nPero tranquilo, nunca es tarde para subirse al hipódromo. https://t.co/dvSsqAK42z"
     },
     {
       "labels": [
@@ -547,9 +435,823 @@
       "rationale": "Cita/sarcasmo evidente, no hay insultos directos",
       "spans": [
         {
-          "text": "obsesivo",
-          "start": 72,
-          "end": 80,
+          "text": "vaya elemento que eras antes y ahora eres casi una persona decente",
+          "start": 66,
+          "end": 107,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 30,
+      "text": "@eltunasremake @luciana8998 Cómo alguien que te conoce desde hace años...\n\nTodos aquí le debemos mucho a esa mujer. Porque madre de Dios, vaya elemento que eras antes y ahora eres casi una persona decente y todo jajaja"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido poético sin insultos ni ataques",
+      "spans": [],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 31,
+      "text": "Falleció la industria.\nDesvivió el arte.\nSe desvaneció el talento.\nEnterraron al amor. https://t.co/Zgd2tGkN1M"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido informativo sin lenguaje ofensivo ni ataques.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 32,
+      "text": "RT @Nintenderos: Atelier Ryza: Ever Darkness &amp; the Secret Hideout DX incluye este error tipográfico en su caja - https://t.co/fhAmGQbcLK ht…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido artístico sin lenguaje ofensivo ni implicaciones de riesgo",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 33,
+      "text": "RT @StarRailVerse1: New Cyrene Illustration\n\n-Artist: BINA\n\n#HonkaiStarRail #崩壊スターレイル https://t.co/zDvrVwmhKo"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No hay contenido ofensivo o sensible en el tweet.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 34,
+      "text": "Jsjsjsjshsjshdjsjd https://t.co/Szbq62ZNwz"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni riesgoso",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 35,
+      "text": "@IMAIZ00MY It's an amazing edit!\n\nI didn't know you had a Twitter, so I uploaded it here to share this beautiful work with more people.\n\nIf you want, I can delete my tweet and retweet yours."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido no ofensivo y sin riesgo evidente",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 36,
+      "text": "RT @IMAIZ00MY: a genshin x hsr x zzz edit to 'the hand' by annabelle dinda which has had me in a chokehold since i first heard it\n\ni had a…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 37,
+      "text": "RT @Senti620: @PokeDailyPost https://t.co/1FjO1tshbH"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 38,
+      "text": "RT @PokeDailyPost: https://t.co/sw1qfVauV4"
+    },
+    {
+      "labels": [
+        "political_sensitivity"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y crítica a decisiones de premiación sin incitación a violencia o desinformación clara",
+      "spans": [
+        {
+          "text": "mayor robo de la historia",
+          "start": 42,
+          "end": 60,
+          "label": "political_sensitivity"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 39,
+      "text": "@JavierWoT No meter al Donkey cuando el año pasado hicieron el mayor robo de la historia dándole el GOTY al Astro Bot con el único argumento de \"hay que valorar más los plataformas divertidos\" sería admitir dicho robo xd"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido sin riesgo evidente, solo un retweet con un símbolo.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 40,
+      "text": "RT @pe_eee00: 「。」 https://t.co/XafnCvNxKS"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni lenguaje ofensivo",
+      "spans": [],
+      "confidence": 0.5,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 41,
+      "text": "@Fyron01 Que dijiste mi ZeroUno"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido neutral sin elementos de riesgo",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 42,
+      "text": "La mejor saga sin duda. Pura ciencia ficción. https://t.co/LyZTSuzBwL https://t.co/KMBpc1SXgr"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 43,
+      "text": "Era...¿Nova? https://t.co/vHqUIF5rhE https://t.co/ql0K1LEHdl"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni ataques, es un comentario informal sobre la edad.",
+      "spans": [],
+      "confidence": 0.2,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 44,
+      "text": "@Agus_jan2 4? 13 años creo xddd"
+    },
+    {
+      "labels": [
+        "legal_privacy"
+      ],
+      "risk_level": "high",
+      "rationale": "Enlace que puede contener información personal identificable (PII)",
+      "spans": [
+        {
+          "text": "https://t.co/etVIp1mokw",
+          "start": 0,
+          "end": 23,
+          "label": "legal_privacy"
+        }
+      ],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 45,
+      "text": "https://t.co/etVIp1mokw"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido informativo y promocional sin elementos de riesgo",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 46,
+      "text": "El FINAL de Amphoreus EXPLICADO: La PARADOJA de CYRENE \n\nMi hilo analizando el final del último arco de Honkai Star Rail, ahora convertido en un vídeo chulísimo para que todos podamos recordar esta maravillosa historia de la mejor manera posible.\n\nUN RT SE AGRADECE MUCHÍSIMO! https://t.co/vNtMDIpDVI"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Comentario neutral sin contenido ofensivo",
+      "spans": [],
+      "confidence": 0.5,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 47,
+      "text": "@Escanor2030G Pues lamentablemente es Lost media"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido neutral sin elementos de riesgo",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 48,
+      "text": "RT @indexdaii: A leer un ratito antes de ir a dormir ddd\n\n #hsr #Cyrene https://t.co/2PBI9SdPRt"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 49,
+      "text": "@DanietMidrets La 4 lo que tiene son unos planos bien hermosos.\n\nPero como experiencia \"anime\", creo que le gana la S1."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido sobre entretenimiento sin lenguaje ofensivo",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 50,
+      "text": "Estrené mi televisión nueva metiéndome un maratón de SnK. \n\nMe vi todo el arco de la caída de Trost del tirón, que pedazo de arco introductorio. Lo infravaloré durante años (sólo porque \"no era nada\" en comparación a todo lo que viene después), pero a día de hoy me parece de los"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No hay contenido ofensivo ni sensible en el tweet.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 51,
+      "text": "@BenjiKun1 @DaiTeDice ?\n\nYo sigo siendo fan de lo que está viendo Dai actualmente. Otra cosa es lo que vino después."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido neutral sin lenguaje ofensivo",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 52,
+      "text": "Que bien escogido cada personaje, sí señor. https://t.co/TfBrLlmbv7"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido humorístico sin insultos ni ataques",
+      "spans": [],
+      "confidence": 0.2,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 53,
+      "text": "Es que madre de Dios jajajs https://t.co/uxeapUpUD3"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido general sin lenguaje ofensivo ni ataques",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 54,
+      "text": "Os comparto uno de los mejores edits de HOYOVERSE que he visto.\n\nLa manera en la que cada frase de la canción encaja con el personaje mostrado (de Genshin, Star Rail y ZZZ) es una locura xd\n\nMe hubiese gustado que añadieran a los de Honkai Impact también, pero bueno jajaja https://t.co/U6mtBPFY4T"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 55,
+      "text": "RT @OoCPokemon: good morning https://t.co/WJIlXYvHMf"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos protegidos.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 56,
+      "text": "@DaiTeDice Disfrútalo. Yo siempre supe que lo disfrutarías un montón, te lo dije allá por el 2022 jajaja\n\nY cómo bien dices aquí, en ese entonces barría por completo a sus competidores directos."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No hay contenido ofensivo o riesgoso en el tweet.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 57,
+      "text": "RT @EmilioAlbi15249: https://t.co/OxtwWOuWmy"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 58,
+      "text": "RT @arrivemedi: point of no return https://t.co/zOyBKLJGzF"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido neutral sin riesgo evidente",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 59,
+      "text": "RT @brkagurabachi: KAGURABACHI - 100 CHAPTERS! 🔥\n#Kagurabachi | #カグラバチ https://t.co/uPeySlu6Cy"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni lenguaje ofensivo, es un comentario sobre la sobriedad de una persona.",
+      "spans": [],
+      "confidence": 0.2,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 60,
+      "text": "RT @LaToskii: @Puto_Guille @TheDarkraimola llevabas once meses sobrio de movidas 😭"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 61,
+      "text": "Narita Brian en Star Blossom es una cosa... https://t.co/cCDcRwkn2k"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 62,
+      "text": "RT @Asellus_Blue: El inframundo de Tezcatlipoca se empieza a llenar. \n@TheDarkraimola https://t.co/s3qyBV8i8C"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo o sensible.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 63,
+      "text": "RT @Auu_i1225: おつかれさま… #Cyrene https://t.co/DiUpUeNLxz"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido neutral y sin riesgo evidente",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 64,
+      "text": "RT @Darkraimolaweb: ENCUESTA DEL SHONEN SEMANAL N°143\n\n¡¡Está semana tenemos\n3 azules 🔵 vs 3 rojos 🔴!!\n\nY está semana tenemos en el menú:…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido informativo sin riesgo evidente",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 65,
+      "text": "RT @wdn_es: 📺 | Anime\nLa cuarta temporada de \"Tokyo Revengers\" llegará el próximo año a Disney Plus. #Anime #Hulu #DisneyPlus #TokyoRevenge…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido sin riesgo identificado",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 66,
+      "text": "RT @maru_0253: 夢の時空最強イレブン https://t.co/tCtXAflR7Y"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo evidente y no hay insultos directos",
+      "spans": [
+        {
+          "text": "no se les da repercusión",
+          "start": 36,
+          "end": 56,
+          "label": "toxic"
+        },
+        {
+          "text": "no lo leyeses",
+          "start": 75,
+          "end": 88,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 67,
+      "text": "@Emmanue77655021 @underblade_s Con el de los asistentes hice el tweet aclarandolo eh\n\nPero a esos no se les da repercusión, prueba es que no lo leyeses jajaja"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido positivo y sin insultos ni ataques.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 68,
+      "text": "@WaifuSupreme54 Que cosa hermosa!\n\nHaru corriendo toda la eternidad en el cielo de Tezcatlipoca, el único que reconoce y valora el esfuerzo de los que perdieron."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni ataques, solo una opinión sobre un tema.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 69,
+      "text": "@Emmanue77655021 @underblade_s Porque corregirlo no iba a servir de nada. Esta gente aún cree que yo le atribuyo todo lo bueno de Chainsaw Man parte 1 a los asistentes cuando aquella vez sólo quise decir que Fujimoto pudo brillar ahí porque estaba rodeado de gente talentosa también xd"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni lenguaje ofensivo",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 70,
+      "text": "@Loborandom1 Tuvo un mal final, pero las primeras temporadas son una obra maestra.\n\nY fíjate, los más fans de GoT fingen que las últimas temporadas no existen. Flow ChainsawMan"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 71,
+      "text": "RT @TheDarkraimola: @Emmanue77655021 @underblade_s Mira, ya es tarde para corregir ese tweet, pero por el contexto previo esperaba que se e…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni ataques, es una aclaración sobre un malentendido.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 72,
+      "text": "@Emmanue77655021 @underblade_s Mira, ya es tarde para corregir ese tweet, pero por el contexto previo esperaba que se entendiese el \"no usen\" como un \"no desprestigien\", \"no ensucien\" o \"no rebajen\", porque el del tweet al que le respondía estaba malinterpretando a Makima para justificar la actitud errática de"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Uso de 'retrasado' como insulto, pero con sarcasmo evidente",
+      "spans": [
+        {
+          "text": "retrasado",
+          "start": 45,
+          "end": 53,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 73,
+      "text": "Una serie considerada entre las mejores de la historia, un anime considerado entre los mejores de la historia y uno de los mejores shonen de peleas de la historia.\n\nY soy yo el retrasado por defenderlas, como si fuesen cualquier cosa jajajaja"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insulto con sarcasmo evidente",
+      "spans": [
+        {
+          "text": "la putísima madre que te recontraparió",
+          "start": 37,
+          "end": 69,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 74,
+      "text": "Como si esos tres fuesen malos, la putísima madre que te recontraparió jajaja https://t.co/g3UDv72zeq https://t.co/CMsK9ncJki"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 75,
+      "text": "RT @Krzuhh: Loco me anda agarrando una hernia de ver los comentarios... años y años de debates con distintos arcos argumentales de obras...…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 76,
+      "text": "RT @WaifuSupreme54: mm alguien por aqui.. A donde vas pequeña?\n\noh! bueno.. supongo que hasta donde me lleve el camino\n\nLa idea surge por u…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni lenguaje ofensivo, es una pregunta neutral.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 77,
+      "text": "@GianRyuugu Y según tú, cuál es mi interpretación del final de la parte 1?"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni ataques, es un comentario sobre una conversación.",
+      "spans": [],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 78,
+      "text": "Estoy seguro de que el tipo no comentó nada de la temporada 3 ni de Kitasan porque sabía que le iba a decir que me copia la opinión jajaja https://t.co/iaeNrcGDXC"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 79,
+      "text": "@underblade_s Sólo con Chainsaw Man."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido humorístico y sin insultos ni ataques",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 80,
+      "text": "@JRR10____ El Eren perdido por Marley más de un año y la Historia embarazada xdd\n\nNo cuadraban los tiempos y aún así era tremendo ship jaja"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido informativo sin lenguaje ofensivo ni ataques",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 81,
+      "text": "Lo que entendemos como Naruto Shippuden empieza así en el manga. Es exactamente el mismo caso que Chainsaw Man.\n\n\"PARTE 1 COMPLETADA\"\n\n\"LA ESPERADÍSIMA SEGUNDA PARTE COMIENZA\" https://t.co/d5WZp8bTmp https://t.co/qWqYieiISg"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 82,
+      "text": "@Games4ndChill Pero xd"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Insulto genérico dirigido a una persona sin slur específico",
+      "spans": [
+        {
+          "text": "retrasado",
+          "start": 10,
+          "end": 18,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 83,
+      "text": "\"sólo un retrasado dividiría Chainsaw Man en partes\"\n\nEl putísimo Fujimoto: https://t.co/zQhzheVBrH"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Comentario despectivo sobre un grupo sin insultos directos",
+      "spans": [
+        {
+          "text": "fandoms más analfabetos",
+          "start": 27,
+          "end": 50,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 84,
+      "text": "Yo creo que estamos ante uno de los fandoms más analfabetos que he visto en mi vida. https://t.co/m7WT2u8DU1 https://t.co/qpMPG8kl7B"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Cita y sarcasmo evidente, sin contenido ofensivo",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 85,
+      "text": "@futurxd Es que es eso jaja\n\nFujimoto fue el primero en dividir esto. No es que nos lo inventemos."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni ataques a grupos protegidos, es una opinión sobre un fandom.",
+      "spans": [],
+      "confidence": 0.65,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 86,
+      "text": "He visto hasta tipos negando la separación en partes de Jojo's, estoy dando volteretas.\n\nFandom completamente gaga."
+    },
+    {
+      "labels": [
+        "political_sensitivity",
+        "toxic"
+      ],
+      "risk_level": "mid",
+      "rationale": "Uso de lenguaje despectivo y afirmaciones extremas sin evidencia clara.",
+      "spans": [
+        {
+          "text": "Dios mío, van a reescribir la realidad",
+          "start": 56,
+          "end": 85,
+          "label": "political_sensitivity"
+        },
+        {
+          "text": "puta parte 2 de mierda",
+          "start": 94,
+          "end": 113,
+          "label": "toxic"
+        }
+      ],
+      "confidence": 0.75,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 87,
+      "text": "HAY GENTE NEGANDO  QUE SE SUELE SEPARAR NARUTO Y NARUTO SHIPPUDEN\n\nDios mío, van a reescribir la realidad únicamente con el fin de  defender la puta parte 2 de mierda. Se van a convertir en el propio demonio motosierra, es increíble. https://t.co/FBIJY8vezM"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 88,
+      "text": "@BoingBim Es...lo que digo en el tweet"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No hay contenido ofensivo o dañino en el tweet.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 89,
+      "text": "@suporterteam55 Nunca lo has visto? En serio?"
+    },
+    {
+      "labels": [
+        "toxic"
+      ],
+      "risk_level": "low",
+      "rationale": "Uso de sarcasmo y lenguaje coloquial sin insultos directos",
+      "spans": [
+        {
+          "text": "hijo bastardo de Fujimoto",
+          "start": 75,
+          "end": 100,
           "label": "toxic"
         }
       ],
@@ -558,104 +1260,127 @@
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
       "tweet_id": 90,
-      "text": "@goge59472 @rodbeingshy @SamAnima07 Yo no vine a decirle nada, sólo que tener 20 tweets insultándome (pese a tenerme bloqueado) es un poco obsesivo jajaja"
+      "text": "Es que parece que a los fans de CSM 2 les duele muchísimo que separemos las partes, nunca he visto cosa igual en ninguna otra obra. Si muchos no queremos reconocer a ese hijo bastardo de Fujimoto, ¿qué más os da? Jajaja"
     },
     {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Uso de sarcasmo y comentarios despectivos sobre preferencias personales.",
-      "spans": [
-        {
-          "text": "las obras que más detesto",
-          "start": 39,
-          "end": 60,
-          "label": "toxic"
-        },
-        {
-          "text": "te faltó un Luffy o un Rudeus",
-          "start": 75,
-          "end": 102,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.75,
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos protegidos.",
+      "spans": [],
+      "confidence": 0.95,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
       "tweet_id": 91,
-      "text": "@Paolo1276789500 @si6568723994531 Hombre Paolo, con esa portada que me traes, está claro que mi contenido no es para ti xd\n\nPueden ser fácilmente las obras que más detesto, te faltó un Luffy o un Rudeus en vez del Tanjiro para rematar jajaja https://t.co/iJ1Tpt0GI7"
+      "text": "¿Por qué separan Naruto y Naruto Shippuden? ¿Por qué separan Dragon Ball y Dragon Ball Z?\n\nEl manga de Naruto es uno sólo, con una numeración ininterrumpida. Y el de Dragon Ball también, o al menos la colección que yo tengo. Y si vais a tirar lo de \"es que el anime lo separó https://t.co/Yu6say4WFA"
     },
     {
-      "labels": [
-        "toxic",
-        "bullying"
-      ],
-      "risk_level": "mid",
-      "rationale": "Insultos y acoso persistente hacia otra persona",
-      "spans": [
-        {
-          "text": "maté a su abuela",
-          "start": 22,
-          "end": 40,
-          "label": "toxic"
-        },
-        {
-          "text": "20 tweets insultándome",
-          "start": 42,
-          "end": 63,
-          "label": "bullying"
-        }
-      ],
-      "confidence": 0.75,
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible.",
+      "spans": [],
+      "confidence": 0.95,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 92,
+      "text": "@DemondNews 23 horas...humm\n\nPuede que jugarlo en Stream ya no sea una locura tan grande...\n\nEn 3 streams de 8h lo acabamos."
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos.",
+      "spans": [],
+      "confidence": 0.95,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
       "tweet_id": 93,
-      "text": "@OneEyedGuille @LorenaRokuhira @CarlitoBurner77 En plan, ¿maté a su abuela o algo y no me di cuenta?\n\nTiene como 20 tweets insultándome y aún por encima me lo queréis victimizar jajaja https://t.co/rmhrRWyNlP"
+      "text": "@TheRealYobbit Obvio, en diciembre es cuando Agi tiene vacaciones"
     },
     {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "mid",
-      "rationale": "Uso de sarcasmo y referencia a un insulto previo, pero no es un ataque directo.",
-      "spans": [
-        {
-          "text": "me llamase terrorista",
-          "start": 56,
-          "end": 74,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.75,
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene lenguaje ofensivo ni ataques a grupos protegidos.",
+      "spans": [],
+      "confidence": 0.85,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
       "tweet_id": 94,
-      "text": "@OneEyedGuille @LorenaRokuhira @CarlitoBurner77 A ver, igual soy un poco resentido, no lo voy a negar. Pero está claro que vuestro amiguito tiene un pequeño problema conmigo.\n\nNo es que \"me llamase  terrorista\" una vez xd https://t.co/1RH7IbVzzZ"
+      "text": "@becomecsm Es cierto que Makima, para manipular a Denji, usó varias veces la lógica de \"hay que apreciar algo bueno después de algo malo\". Con las pelis y con la piruleta, por ejemplo. Todo para que este se refugiase en ella tras haberle jodido la vida.\n\nPero también es cierto que ella"
     },
     {
-      "labels": [
-        "toxic"
-      ],
-      "risk_level": "low",
-      "rationale": "Uso de sarcasmo evidente y lenguaje no ofensivo",
-      "spans": [
-        {
-          "text": "lo pasé mal eh jajaja",
-          "start": 35,
-          "end": 50,
-          "label": "toxic"
-        }
-      ],
-      "confidence": 0.65,
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene insultos ni ataques, solo una opinión sobre un personaje.",
+      "spans": [],
+      "confidence": 0.85,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 95,
+      "text": "@samsan_08 Es una contradicción para nosotros porque sabemos que está equivocada, pero repito, Makima no está siendo \"hipócrita\" ni teniendo unas ideas contradictorias según su forma de pensar. No está siendo \"loca y caótica\". Ella podría tener un pensamiento equivocado, pero era fiel a su"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible.",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 96,
+      "text": "RT @espoter455: @TheDarkraimola Si es que ya sabia yo sksjaja por cierto me salio esto en Instagram, es como \"de que pais seria cada herede…"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "No contiene contenido ofensivo ni sensible",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 97,
+      "text": "\"Sé que siempre te confiaré mi punto débil\" https://t.co/707N698KPL"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido neutral sin riesgo evidente",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 98,
+      "text": "RT @osamu18568716: see you🌟 #HonkaiStarRail #Cyrene https://t.co/8bfDD6Nyfs"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "Contenido humorístico y sin ofensas",
+      "spans": [],
+      "confidence": 0.1,
+      "attempt": 1,
+      "finish_reason": "stop",
+      "policy_applied": "sin cambios",
+      "tweet_id": 99,
+      "text": "Vamooooos (yo soy de Agosto) jajaja https://t.co/vFcvpDioOt"
+    },
+    {
+      "labels": [],
+      "risk_level": "no",
+      "rationale": "El contenido no contiene insultos ni ataques directos a personas o grupos.",
+      "spans": [],
+      "confidence": 0.85,
       "attempt": 1,
       "finish_reason": "stop",
       "policy_applied": "sin cambios",
       "tweet_id": 100,
-      "text": "La parte de los espantapájaros del Silent Hill F...lo pasé mal eh jajaja"
+      "text": "Kitasan Black quería que la llorasen los decadentes, los acabados, los gagas, los reventados, los que perdieron el prime. Así que no nos importa si a vos, soñador esperanzado que aún tiene futuro, no te conmueve su retiro... porque aún no lo entiendes pero créeme que lo vas a https://t.co/9YWdR5rx7t https://t.co/cugyXPqwCh"
     }
   ]
 }

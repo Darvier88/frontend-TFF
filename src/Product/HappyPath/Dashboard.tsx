@@ -353,17 +353,34 @@ const Dashboard: React.FC = () => {
         );
       } else {
         // Todo exitoso: remover todos los seleccionados
-        setRiskItems((prev) =>
-          prev.filter((item) => !selectedIds.has(item.tweet_id))
-        );
+          setRiskItems((prev) =>
+            prev.filter((item) => !selectedIds.has(item.tweet_id))
+          );
 
-        alert(
-          `✅ Success!\n\n` +
-          `${totalDeleted} tweets permanently deleted from:\n` +
-          `• Twitter/X\n` +
-          `• Firebase Database\n\n` +
-          `This action cannot be undone.`
-        );
+          alert(
+            `✅ Success!\n\n` +
+            `${totalDeleted} tweets permanently deleted from:\n` +
+            `• Twitter/X\n` +
+            `• Firebase Database\n\n` +
+            `This action cannot be undone.`
+          );
+          
+          // 🆕 FORZAR RECARGA DE DATOS ACTUALIZADOS DESDE FIREBASE
+          console.log("🔄 Reloading updated data from Firebase...");
+          
+          // Limpiar selección primero
+          setSelectedIds(new Set());
+          setShowConfirmModal(false);
+          setDeletionProgress("");
+          setIsDeleting(false);
+          
+          // Esperar 1 segundo para que Firebase termine de actualizarse
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+          
+          // IMPORTANTE: Salir de la función para evitar que el código de abajo se ejecute
+          return;
       }
 
       // Limpiar selección
@@ -462,11 +479,22 @@ const Dashboard: React.FC = () => {
 
       if (failed.length === 0) {
         // Eliminación exitosa
-        setRiskItems((prev) =>
+       setRiskItems((prev) =>
           prev.filter((item) => item.tweet_id !== tweetId)
         );
 
         alert("✅ Tweet permanently deleted from Twitter & Firebase");
+        
+        // 🆕 FORZAR RECARGA
+        console.log("🔄 Reloading updated data from Firebase...");
+        setDeletionProgress("");
+        setIsDeleting(false);
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        
+        return;
       } else {
         // Falló
         alert("❌ Failed to delete tweet. Please try again.");
