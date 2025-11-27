@@ -44,7 +44,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   const [etaLabel, setEtaLabel] = React.useState<string>(`${etaHours} hours`);
   
   // ✅ Obtener username del sessionStorage (temporal durante la sesión)
-  const [resolvedUsername, setResolvedUsername] = React.useState(() => {
+  const [resolvedUsername] = React.useState(() => {
     try {
       const saved = sessionStorage.getItem("username");
       if (saved) {
@@ -120,7 +120,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
     const executeSearchAndAnalysis = async () => {
       const sessionId = sessionStorage.getItem("session_id");
-      const username = sessionStorage.getItem("username");
 
       if (!sessionId) {
         console.error("❌ No session_id found, skipping search and analysis");
@@ -141,7 +140,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              max_tweets: 10, // null = todos los tweets
+              max_tweets: 100, // null = todos los tweets
               save_to_firebase: true
             }),
           }
@@ -322,6 +321,9 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               loop
               muted
               playsInline
+              disablePictureInPicture
+              disableRemotePlayback
+              controlsList="nodownload noremoteplayback noplaybackrate"
             />
           </div>
         </Stack>
