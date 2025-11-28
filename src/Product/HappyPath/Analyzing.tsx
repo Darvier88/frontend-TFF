@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Paper, Stack, Typography, CircularProgress } from "@mui/material";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -98,7 +98,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   
   const [isCalculating, setIsCalculating] = React.useState(true);
   
-  // Estados para polling en tiempo real
+  // Estados para polling en tiempo real - Usar useRef para evitar re-renders innecesarios
   const [searchJobId, setSearchJobId] = React.useState<string | null>(null);
   const [searchStatus, setSearchStatus] = React.useState<string>("pending");
   const [currentPhase, setCurrentPhase] = React.useState<string>("initializing");
@@ -106,11 +106,18 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   const [tweetsProcessed, setTweetsProcessed] = React.useState(0);
   const [rateLimitResetTime, setRateLimitResetTime] = React.useState<string | null>(null);
   
-  // ✅ Estado para almacenar los tweets obtenidos
+  // Estado para almacenar los tweets obtenidos
   const [fetchedTweets, setFetchedTweets] = React.useState<any[]>([]);
+  
+  // Refs para evitar múltiples ejecuciones
+  const hasStartedSearchRef = React.useRef(false);
+  const hasStartedClassificationRef = React.useRef(false);
 
   // Obtener tiempo estimado y ejecutar búsqueda + análisis
   React.useEffect(() => {
+    if (hasStartedSearchRef.current) return;
+    hasStartedSearchRef.current = true;
+
     const fetchTiempoEstimado = async () => {
       try {
         setIsCalculating(true);
@@ -170,7 +177,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
       console.log("🚀 Starting automated search and analysis...");
 
-      // ✅ PASO 1: Iniciar búsqueda de tweets (retorna job_id)
       try {
         console.log("📡 [1/2] Starting tweet search job...");
         setCurrentPhase("searching");
@@ -199,7 +205,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
         if (searchData.job_id) {
           console.log("✅ Search job started:", searchData.job_id);
           setSearchJobId(searchData.job_id);
-          // El polling comenzará automáticamente con el siguiente useEffect
         } else {
           console.error("❌ No job_id received from search endpoint");
         }
@@ -209,16 +214,15 @@ const Analyzing: React.FC<AnalyzingProps> = ({
       }
     };
 
-    // Ejecutar en secuencia
     const runAll = async () => {
       await fetchTiempoEstimado();
       await executeSearchAndAnalysis();
     };
 
     runAll();
-  }, [navigate]);
+  }, []);
 
-  // ✅ useEffect para polling del job
+  // useEffect para polling del job
   React.useEffect(() => {
     if (!searchJobId) return;
 
@@ -273,7 +277,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
             console.log("💾 Tweets Firebase Doc ID saved to session");
           }
 
-          // ✅ Guardar los tweets para la clasificación
+          // Guardar los tweets para la clasificación
           if (jobData.result?.tweets) {
             setFetchedTweets(jobData.result.tweets);
             console.log(`📦 Stored ${jobData.result.tweets.length} tweets for classification`);
@@ -289,14 +293,15 @@ const Analyzing: React.FC<AnalyzingProps> = ({
       } catch (err) {
         console.error("❌ Error during polling:", err);
       }
-    }, 3000); // Poll cada 3 segundos
+    }, 3000);
 
     return () => clearInterval(pollInterval);
   }, [searchJobId]);
 
-  // ✅ useEffect para iniciar clasificación cuando los tweets estén listos
+  // useEffect para iniciar clasificación cuando los tweets estén listos
   React.useEffect(() => {
-    if (fetchedTweets.length === 0) return;
+    if (fetchedTweets.length === 0 || hasStartedClassificationRef.current) return;
+    hasStartedClassificationRef.current = true;
     
     const startRiskClassification = async () => {
       const sessionId = sessionStorage.getItem("session_id");
@@ -318,8 +323,8 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              tweets: fetchedTweets, // ✅ Ahora enviamos los tweets
-              max_tweets: null // Clasificar todos
+              tweets: fetchedTweets,
+              max_tweets: null
             }),
           }
         );
@@ -338,7 +343,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
           execution_time: riskData.execution_time
         });
 
-        // Guardar Firebase Doc ID
         if (riskData.firebase_doc_id) {
           sessionStorage.setItem("classification_firebase_id", riskData.firebase_doc_id);
           console.log("💾 Classification Firebase Doc ID saved to session");
@@ -348,7 +352,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
         console.log("🔥 All data saved to Firebase!");
         console.log("🎉 All processes completed successfully!");
         
-        // Redirigir al dashboard
         console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
         setTimeout(() => {
           navigate("/dashboard");
@@ -362,6 +365,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     startRiskClassification();
   }, [fetchedTweets, navigate]);
 
+  // Step animation timer
   React.useEffect(() => {
     if (step >= 3) return;
 
@@ -371,6 +375,19 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
     return () => clearTimeout(timeout);
   }, [step]);
+
+  const getPhaseTitle = () => {
+    switch (currentPhase) {
+      case "searching":
+        return "Fetching your posts";
+      case "classifying":
+        return "Analyzing your posts";
+      case "completed":
+        return "Analysis complete!";
+      default:
+        return "Preparing analysis";
+    }
+  };
 
   const renderContent = () => {
     if (step === 1) {
@@ -401,10 +418,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               }}
               className="analyze-placeholder"
             >
-              {currentPhase === "searching" && "Fetching your posts"}
-              {currentPhase === "classifying" && "Analyzing your posts"}
-              {currentPhase === "completed" && "Analysis complete!"}
-              {currentPhase === "initializing" && "Preparing analysis"}
+              {getPhaseTitle()}
             </Typography>
 
             {/* Barra de progreso */}
@@ -617,22 +631,18 @@ const Analyzing: React.FC<AnalyzingProps> = ({
             justifyContent: "center",
           }}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{
-                duration: step === 2 ? 0.3 : 0.4,
-                type: step === 2 ? "tween" : "spring",
-                stiffness: 100,
-                damping: 15,
-              }}
-            >
-              {renderContent()}
-            </motion.div>
-          </AnimatePresence>
+          {/* Removimos AnimatePresence y simplificamos la animación */}
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              ease: "easeOut"
+            }}
+          >
+            {renderContent()}
+          </motion.div>
         </Box>
       </Paper>
     </Box>
