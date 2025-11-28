@@ -14,7 +14,18 @@ interface AnalyzingProps {
 
 const stepDurations = [100, 2000, 1000];
 
-const API_BASE_URL = "https://x-gpt-jet.vercel.app/";
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  const defaultUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:8080' 
+    : 'https://x-gpt-jet.vercel.app';
+  
+  const url = envUrl || defaultUrl;
+  // Eliminar slash final si existe
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+};
+
+const API_BASE_URL = getApiUrl();
 
 const formatDuration = (hhmmss: string) => {
   const cleaned = hhmmss.replace(/≈/g, "").trim();
