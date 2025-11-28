@@ -102,7 +102,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
         }
 
         const res = await fetch(
-          `${API_BASE_URL}api/estimate/time?session_id=${sessionId}`,
+          `${API_BASE_URL}/api/estimate/time?session_id=${sessionId}`,
           {
             method: "GET",
             headers: {
@@ -145,7 +145,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
         console.log("📡 [1/2] Fetching tweets and saving to Firebase...");
         
         const searchRes = await fetch(
-          `${API_BASE_URL}api/tweets/search?session_id=${sessionId}`,
+          `${API_BASE_URL}/api/tweets/search?session_id=${sessionId}`,
           {
             method: "POST",
             headers: {
@@ -182,7 +182,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
           console.log("🔍 [2/2] Classifying risk and saving to Firebase...");
 
           const classifyRes = await fetch(
-            `${API_BASE_URL}api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
+            `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
             {
               method: "POST",
               headers: {
