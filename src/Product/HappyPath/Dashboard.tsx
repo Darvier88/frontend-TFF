@@ -284,7 +284,7 @@ const Dashboard: React.FC = () => {
 
       // Llamar al endpoint de eliminación (OPCIÓN A: Twitter + Firebase)
       // ✅ FIX: Agregar tweet_ids como parámetro
-      const url = `${API_BASE_URL}/api/tweets/delete?` +
+      const url = `${API_BASE_URL}api/tweets/delete?` +
         `session_id=${sessionId}&` +
         `firebase_doc_id=${tweetsDocId}&` +
         `tweet_ids=${encodeURIComponent(tweetIdsString)}&` +  // ← NUEVO
@@ -447,7 +447,7 @@ const Dashboard: React.FC = () => {
       setDeletionProgress("Deleting tweet from Twitter...");
 
       // ✅ FIX: Enviar solo el ID del tweet específico
-      const url = `${API_BASE_URL}/api/tweets/delete?` +
+      const url = `${API_BASE_URL}api/tweets/delete?` +
         `session_id=${sessionId}&` +
         `firebase_doc_id=${tweetsDocId}&` +
         `tweet_ids=${tweetId}&` +  // ← SOLO ESTE TWEET
@@ -540,7 +540,7 @@ const Dashboard: React.FC = () => {
 
     console.log("📧 Checking if email needs to be sent...");
 
-    const url = `${API_BASE_URL}/api/notifications/send-analysis-ready?` +
+    const url = `${API_BASE_URL}api/notifications/send-analysis-ready?` +
       `session_id=${sessionId}&` +
       `tweets_firebase_id=${tweetsDocId}&` +
       `classification_firebase_id=${classificationDocId}`;
@@ -600,7 +600,7 @@ const Dashboard: React.FC = () => {
       }
 
       // Llamar al endpoint para obtener datos de Firebase
-      const url = `${API_BASE_URL}/api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`;
+      const url = `${API_BASE_URL}api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`;
       console.log("🌐 Calling URL:", url);
 
       const response = await fetch(url, {
