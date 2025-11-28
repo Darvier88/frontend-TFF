@@ -34,7 +34,7 @@ const getApiUrl = () => {
 
 const API_BASE_URL = getApiUrl();
 
-
+console.log("🌐 API_BASE_URL:", API_BASE_URL);
 
 const Dashboard: React.FC = () => {
   const FIXED_CONTENT_LABELS: string[] = [

@@ -26,6 +26,7 @@ const getApiUrl = () => {
 };
 
 const API_BASE_URL = getApiUrl();
+console.log("🌐 [Config] API_BASE_URL set to:", API_BASE_URL);
 
 const formatDuration = (hhmmss: string) => {
   const cleaned = hhmmss.replace(/≈/g, "").trim();
