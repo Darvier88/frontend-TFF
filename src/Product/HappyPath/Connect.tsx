@@ -4,10 +4,41 @@ import { useState } from "react";
 import logoUrl from "../../assets/tff_logo.svg";
 import xLogo from "../../assets/x-logo.png";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (window.location.hostname === 'localhost' 
+const getApiUrl = () => {
+  // 1. Permitir override con query parameter ?api=local
+  const urlParams = new URLSearchParams(window.location.search);
+  const apiOverride = urlParams.get('api');
+  
+  if (apiOverride === 'local') {
+    console.log('🔧 [Override] Using local backend');
+    return 'http://localhost:8080';
+  }
+  
+  if (apiOverride === 'prod') {
+    console.log('🔧 [Override] Using production backend');
+    return 'https://x-gpt-jet.vercel.app';
+  }
+  
+  // 2. Variable de entorno
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    console.log('🌐 [Config] Using VITE_API_URL:', envUrl);
+    return envUrl.replace(/\/$/, '');
+  }
+  
+  // 3. Auto-detect
+  const isLocalhost = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1';
+  
+  const defaultUrl = isLocalhost 
     ? 'http://localhost:8080' 
-    : 'https://x-gpt-jet.vercel.app');
+    : 'https://x-gpt-jet.vercel.app';
+  
+  console.log('🌐 [Auto-detect] API URL:', defaultUrl);
+  return defaultUrl;
+};
+
+const API_BASE_URL = getApiUrl();
 
 export default function Connect() {
   const [loading, setLoading] = useState(false);

@@ -22,14 +22,37 @@ import {
 } from "../data/types";
 
 const getApiUrl = () => {
+  // 1. Permitir override con query parameter ?api=local
+  const urlParams = new URLSearchParams(window.location.search);
+  const apiOverride = urlParams.get('api');
+  
+  if (apiOverride === 'local') {
+    console.log('🔧 [Override] Using local backend');
+    return 'http://localhost:8080';
+  }
+  
+  if (apiOverride === 'prod') {
+    console.log('🔧 [Override] Using production backend');
+    return 'https://x-gpt-jet.vercel.app';
+  }
+  
+  // 2. Variable de entorno
   const envUrl = import.meta.env.VITE_API_URL;
-  const defaultUrl = window.location.hostname === 'localhost' 
+  if (envUrl) {
+    console.log('🌐 [Config] Using VITE_API_URL:', envUrl);
+    return envUrl.replace(/\/$/, '');
+  }
+  
+  // 3. Auto-detect
+  const isLocalhost = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1';
+  
+  const defaultUrl = isLocalhost 
     ? 'http://localhost:8080' 
     : 'https://x-gpt-jet.vercel.app';
   
-  const url = envUrl || defaultUrl;
-  // Eliminar slash final si existe
-  return url.endsWith('/') ? url.slice(0, -1) : url;
+  console.log('🌐 [Auto-detect] API URL:', defaultUrl);
+  return defaultUrl;
 };
 
 const API_BASE_URL = getApiUrl();
