@@ -4,7 +4,10 @@ import { useState } from "react";
 import logoUrl from "../../assets/tff_logo.svg";
 import xLogo from "../../assets/x-logo.png";
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_URL || 
+  (window.location.hostname === 'localhost' 
+    ? 'http://localhost:8080' 
+    : 'https://x-gpt-jet.vercel.app');
 
 export default function Connect() {
   const [loading, setLoading] = useState(false);

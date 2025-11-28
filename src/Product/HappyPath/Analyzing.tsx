@@ -14,7 +14,7 @@ interface AnalyzingProps {
 
 const stepDurations = [100, 2000, 1000];
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "https://x-gpt-jet.vercel.app/";
 
 const formatDuration = (hhmmss: string) => {
   const cleaned = hhmmss.replace(/≈/g, "").trim();
