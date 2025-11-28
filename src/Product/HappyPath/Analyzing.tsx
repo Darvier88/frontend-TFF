@@ -15,7 +15,6 @@ interface AnalyzingProps {
 const stepDurations = [100, 2000, 1000];
 
 const getApiUrl = () => {
-  // 1. Permitir override con query parameter ?api=local
   const urlParams = new URLSearchParams(window.location.search);
   const apiOverride = urlParams.get('api');
   
@@ -29,14 +28,12 @@ const getApiUrl = () => {
     return 'https://x-gpt-jet.vercel.app';
   }
   
-  // 2. Variable de entorno
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl) {
     console.log('🌐 [Config] Using VITE_API_URL:', envUrl);
     return envUrl.replace(/\/$/, '');
   }
   
-  // 3. Auto-detect
   const isLocalhost = window.location.hostname === 'localhost' || 
                       window.location.hostname === '127.0.0.1';
   
@@ -78,7 +75,6 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   const [resolvedTotalPosts, setResolvedTotalPosts] = React.useState(totalPosts);
   const [etaLabel, setEtaLabel] = React.useState<string>(`${etaHours} hours`);
   
-  // ✅ Obtener username del sessionStorage (temporal durante la sesión)
   const [resolvedUsername] = React.useState(() => {
     try {
       const saved = sessionStorage.getItem("username");
@@ -102,13 +98,16 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   
   const [isCalculating, setIsCalculating] = React.useState(true);
   
-  // ✅ Estados para polling en tiempo real
+  // Estados para polling en tiempo real
   const [searchJobId, setSearchJobId] = React.useState<string | null>(null);
   const [searchStatus, setSearchStatus] = React.useState<string>("pending");
   const [currentPhase, setCurrentPhase] = React.useState<string>("initializing");
   const [progressPercent, setProgressPercent] = React.useState(0);
   const [tweetsProcessed, setTweetsProcessed] = React.useState(0);
   const [rateLimitResetTime, setRateLimitResetTime] = React.useState<string | null>(null);
+  
+  // ✅ Estado para almacenar los tweets obtenidos
+  const [fetchedTweets, setFetchedTweets] = React.useState<any[]>([]);
 
   // Obtener tiempo estimado y ejecutar búsqueda + análisis
   React.useEffect(() => {
@@ -274,8 +273,11 @@ const Analyzing: React.FC<AnalyzingProps> = ({
             console.log("💾 Tweets Firebase Doc ID saved to session");
           }
 
-          // Iniciar clasificación de riesgos
-          await startRiskClassification();
+          // ✅ Guardar los tweets para la clasificación
+          if (jobData.result?.tweets) {
+            setFetchedTweets(jobData.result.tweets);
+            console.log(`📦 Stored ${jobData.result.tweets.length} tweets for classification`);
+          }
         }
 
         // Job fallido
@@ -292,64 +294,73 @@ const Analyzing: React.FC<AnalyzingProps> = ({
     return () => clearInterval(pollInterval);
   }, [searchJobId]);
 
-  // ✅ Función para iniciar clasificación de riesgos
-  const startRiskClassification = async () => {
-    const sessionId = sessionStorage.getItem("session_id");
+  // ✅ useEffect para iniciar clasificación cuando los tweets estén listos
+  React.useEffect(() => {
+    if (fetchedTweets.length === 0) return;
     
-    if (!sessionId) {
-      console.error("❌ No session_id found for risk classification");
-      return;
-    }
-
-    try {
-      console.log("🔍 [2/2] Starting risk classification...");
-      setCurrentPhase("classifying");
-
-      const classifyRes = await fetch(
-        `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            max_tweets: null // Clasificar todos los tweets
-          }),
-        }
-      );
-
-      if (!classifyRes.ok) {
-        console.error("❌ Error classifying risk:", classifyRes.status);
+    const startRiskClassification = async () => {
+      const sessionId = sessionStorage.getItem("session_id");
+      
+      if (!sessionId) {
+        console.error("❌ No session_id found for risk classification");
         return;
       }
 
-      const riskData = await classifyRes.json();
-      console.log("✅ Risk classification completed:", {
-        total_analyzed: riskData.total_tweets,
-        distribution: riskData.summary?.risk_distribution,
-        firebase_doc_id: riskData.firebase_doc_id,
-        execution_time: riskData.execution_time
-      });
+      try {
+        console.log("🔍 [2/2] Starting risk classification...");
+        setCurrentPhase("classifying");
 
-      // Guardar Firebase Doc ID
-      if (riskData.firebase_doc_id) {
-        sessionStorage.setItem("classification_firebase_id", riskData.firebase_doc_id);
-        console.log("💾 Classification Firebase Doc ID saved to session");
+        const classifyRes = await fetch(
+          `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              tweets: fetchedTweets, // ✅ Ahora enviamos los tweets
+              max_tweets: null // Clasificar todos
+            }),
+          }
+        );
+
+        if (!classifyRes.ok) {
+          const errorText = await classifyRes.text();
+          console.error("❌ Error classifying risk:", classifyRes.status, errorText);
+          return;
+        }
+
+        const riskData = await classifyRes.json();
+        console.log("✅ Risk classification completed:", {
+          total_analyzed: riskData.total_tweets,
+          distribution: riskData.summary?.risk_distribution,
+          firebase_doc_id: riskData.firebase_doc_id,
+          execution_time: riskData.execution_time
+        });
+
+        // Guardar Firebase Doc ID
+        if (riskData.firebase_doc_id) {
+          sessionStorage.setItem("classification_firebase_id", riskData.firebase_doc_id);
+          console.log("💾 Classification Firebase Doc ID saved to session");
+        }
+        
+        setCurrentPhase("completed");
+        console.log("🔥 All data saved to Firebase!");
+        console.log("🎉 All processes completed successfully!");
+        
+        // Redirigir al dashboard
+        console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1500);
+
+      } catch (err) {
+        console.error("❌ Error during risk classification:", err);
       }
-      
-      console.log("🔥 All data saved to Firebase!");
-      console.log("🎉 All processes completed successfully!");
-      
-      // Redirigir al dashboard
-      console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+    };
 
-    } catch (err) {
-      console.error("❌ Error during risk classification:", err);
-    }
-  };
+    startRiskClassification();
+  }, [fetchedTweets, navigate]);
 
   React.useEffect(() => {
     if (step >= 3) return;
@@ -393,6 +404,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               {currentPhase === "searching" && "Fetching your posts"}
               {currentPhase === "classifying" && "Analyzing your posts"}
               {currentPhase === "completed" && "Analysis complete!"}
+              {currentPhase === "initializing" && "Preparing analysis"}
             </Typography>
 
             {/* Barra de progreso */}
