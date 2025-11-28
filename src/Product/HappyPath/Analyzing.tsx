@@ -101,6 +101,14 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   });
   
   const [isCalculating, setIsCalculating] = React.useState(true);
+  
+  // ✅ Estados para polling en tiempo real
+  const [searchJobId, setSearchJobId] = React.useState<string | null>(null);
+  const [searchStatus, setSearchStatus] = React.useState<string>("pending");
+  const [currentPhase, setCurrentPhase] = React.useState<string>("initializing");
+  const [progressPercent, setProgressPercent] = React.useState(0);
+  const [tweetsProcessed, setTweetsProcessed] = React.useState(0);
+  const [rateLimitResetTime, setRateLimitResetTime] = React.useState<string | null>(null);
 
   // Obtener tiempo estimado y ejecutar búsqueda + análisis
   React.useEffect(() => {
@@ -163,9 +171,10 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
       console.log("🚀 Starting automated search and analysis...");
 
-      // ✅ PASO 1: Búsqueda de tweets (solo Firebase)
+      // ✅ PASO 1: Iniciar búsqueda de tweets (retorna job_id)
       try {
-        console.log("📡 [1/2] Fetching tweets and saving to Firebase...");
+        console.log("📡 [1/2] Starting tweet search job...");
+        setCurrentPhase("searching");
         
         const searchRes = await fetch(
           `${API_BASE_URL}/api/tweets/search?session_id=${sessionId}`,
@@ -175,83 +184,29 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              max_tweets: 1000, // null = todos los tweets
+              max_tweets: 100,
               save_to_firebase: true
             }),
           }
         );
 
         if (!searchRes.ok) {
-          console.error("❌ Error fetching tweets:", searchRes.status);
+          console.error("❌ Error starting tweet search:", searchRes.status);
           return;
         }
 
         const searchData = await searchRes.json();
-        console.log("✅ Tweets fetched and saved to Firebase:", {
-          total: searchData.tweets?.length || 0,
-          username: searchData.username,
-          firebase_doc_id: searchData.firebase_doc_id,
-          execution_time: searchData.execution_time
-        });
-
-        // ✅ Guardar Firebase Doc ID en sessionStorage (para pasar al Dashboard)
-        if (searchData.firebase_doc_id) {
-          sessionStorage.setItem("tweets_firebase_id", searchData.firebase_doc_id);
-          console.log("💾 Tweets Firebase Doc ID saved to session");
-        }
-
-        // ✅ PASO 2: Clasificación de riesgos (solo Firebase)
-        if (searchData.tweets && searchData.tweets.length > 0) {
-          console.log("🔍 [2/2] Classifying risk and saving to Firebase...");
-
-          const classifyRes = await fetch(
-            `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                tweets: searchData.tweets, // Objetos completos
-                max_tweets: null // null = todos
-              }),
-            }
-          );
-
-          if (!classifyRes.ok) {
-            console.error("❌ Error classifying risk:", classifyRes.status);
-            return;
-          }
-
-          const riskData = await classifyRes.json();
-          console.log("✅ Risk classification completed and saved to Firebase:", {
-            total_analyzed: riskData.total_tweets,
-            distribution: riskData.summary?.risk_distribution,
-            firebase_doc_id: riskData.firebase_doc_id,
-            execution_time: riskData.execution_time
-          });
-
-          // ✅ Guardar Firebase Doc ID en sessionStorage
-          if (riskData.firebase_doc_id) {
-            sessionStorage.setItem("classification_firebase_id", riskData.firebase_doc_id);
-            console.log("💾 Classification Firebase Doc ID saved to session");
-          }
-          
-          console.log("🔥 All data saved to Firebase!");
-          console.log("🎉 All processes completed successfully!");
-          
-          // Redirigir al dashboard
-          console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1500);
-
+        
+        if (searchData.job_id) {
+          console.log("✅ Search job started:", searchData.job_id);
+          setSearchJobId(searchData.job_id);
+          // El polling comenzará automáticamente con el siguiente useEffect
         } else {
-          console.warn("⚠️ No tweets found to classify");
+          console.error("❌ No job_id received from search endpoint");
         }
 
       } catch (err) {
-        console.error("❌ Error during search and analysis:", err);
+        console.error("❌ Error during search initialization:", err);
       }
     };
 
@@ -263,6 +218,138 @@ const Analyzing: React.FC<AnalyzingProps> = ({
 
     runAll();
   }, [navigate]);
+
+  // ✅ useEffect para polling del job
+  React.useEffect(() => {
+    if (!searchJobId) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        console.log(`🔄 Polling job ${searchJobId}...`);
+        
+        const res = await fetch(
+          `${API_BASE_URL}/api/jobs/${searchJobId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          console.error("❌ Error polling job status:", res.status);
+          return;
+        }
+
+        const jobData = await res.json();
+        console.log("📊 Job status:", jobData);
+
+        // Actualizar estado
+        setSearchStatus(jobData.status);
+        
+        if (jobData.progress) {
+          setProgressPercent(jobData.progress.percentage || 0);
+          setTweetsProcessed(jobData.progress.tweets_processed || 0);
+          setCurrentPhase(jobData.progress.phase || "processing");
+        }
+
+        // Manejar rate limit
+        if (jobData.status === "waiting_rate_limit" && jobData.rate_limit_reset) {
+          const resetTime = new Date(jobData.rate_limit_reset).toLocaleTimeString();
+          setRateLimitResetTime(resetTime);
+          console.log("⏳ Waiting for rate limit reset at:", resetTime);
+        } else {
+          setRateLimitResetTime(null);
+        }
+
+        // Job completado
+        if (jobData.status === "completed") {
+          console.log("✅ Search job completed!");
+          clearInterval(pollInterval);
+          
+          // Guardar resultados
+          if (jobData.result?.firebase_doc_id) {
+            sessionStorage.setItem("tweets_firebase_id", jobData.result.firebase_doc_id);
+            console.log("💾 Tweets Firebase Doc ID saved to session");
+          }
+
+          // Iniciar clasificación de riesgos
+          await startRiskClassification();
+        }
+
+        // Job fallido
+        if (jobData.status === "failed") {
+          console.error("❌ Search job failed:", jobData.error);
+          clearInterval(pollInterval);
+        }
+
+      } catch (err) {
+        console.error("❌ Error during polling:", err);
+      }
+    }, 3000); // Poll cada 3 segundos
+
+    return () => clearInterval(pollInterval);
+  }, [searchJobId]);
+
+  // ✅ Función para iniciar clasificación de riesgos
+  const startRiskClassification = async () => {
+    const sessionId = sessionStorage.getItem("session_id");
+    
+    if (!sessionId) {
+      console.error("❌ No session_id found for risk classification");
+      return;
+    }
+
+    try {
+      console.log("🔍 [2/2] Starting risk classification...");
+      setCurrentPhase("classifying");
+
+      const classifyRes = await fetch(
+        `${API_BASE_URL}/api/risk/classify?session_id=${sessionId}&save_to_firebase=true`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            max_tweets: null // Clasificar todos los tweets
+          }),
+        }
+      );
+
+      if (!classifyRes.ok) {
+        console.error("❌ Error classifying risk:", classifyRes.status);
+        return;
+      }
+
+      const riskData = await classifyRes.json();
+      console.log("✅ Risk classification completed:", {
+        total_analyzed: riskData.total_tweets,
+        distribution: riskData.summary?.risk_distribution,
+        firebase_doc_id: riskData.firebase_doc_id,
+        execution_time: riskData.execution_time
+      });
+
+      // Guardar Firebase Doc ID
+      if (riskData.firebase_doc_id) {
+        sessionStorage.setItem("classification_firebase_id", riskData.firebase_doc_id);
+        console.log("💾 Classification Firebase Doc ID saved to session");
+      }
+      
+      console.log("🔥 All data saved to Firebase!");
+      console.log("🎉 All processes completed successfully!");
+      
+      // Redirigir al dashboard
+      console.log("🔄 Redirecting to dashboard in 1.5 seconds...");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+
+    } catch (err) {
+      console.error("❌ Error during risk classification:", err);
+    }
+  };
 
   React.useEffect(() => {
     if (step >= 3) return;
@@ -303,8 +390,58 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               }}
               className="analyze-placeholder"
             >
-              Analyzing your posts
+              {currentPhase === "searching" && "Fetching your posts"}
+              {currentPhase === "classifying" && "Analyzing your posts"}
+              {currentPhase === "completed" && "Analysis complete!"}
             </Typography>
+
+            {/* Barra de progreso */}
+            {searchJobId && searchStatus !== "completed" && (
+              <Box sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 2 }}>
+                <Box sx={{ 
+                  width: "100%", 
+                  height: 8, 
+                  bgcolor: "#E5E7EB", 
+                  borderRadius: 1,
+                  overflow: "hidden"
+                }}>
+                  <Box sx={{
+                    width: `${progressPercent}%`,
+                    height: "100%",
+                    bgcolor: "#3B82F6",
+                    transition: "width 0.3s ease"
+                  }} />
+                </Box>
+                <Typography sx={{ 
+                  fontSize: 13, 
+                  color: "#6B7280", 
+                  mt: 1,
+                  fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont"
+                }}>
+                  {tweetsProcessed > 0 ? `${tweetsProcessed} posts processed` : "Starting..."}
+                  {progressPercent > 0 && ` • ${progressPercent}%`}
+                </Typography>
+              </Box>
+            )}
+
+            {/* Mensaje de rate limit */}
+            {searchStatus === "waiting_rate_limit" && rateLimitResetTime && (
+              <Box sx={{ 
+                mt: 2, 
+                p: 2, 
+                bgcolor: "#FEF3C7", 
+                borderRadius: 2,
+                border: "1px solid #FCD34D"
+              }}>
+                <Typography sx={{ 
+                  fontSize: 14, 
+                  color: "#92400E",
+                  fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont"
+                }}>
+                  ⏳ Waiting for rate limit reset at {rateLimitResetTime}
+                </Typography>
+              </Box>
+            )}
 
             <Typography
               sx={{
@@ -312,6 +449,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                 color: "#4A5565",
                 fontFamily:
                   "Inter, system-ui, -apple-system, BlinkMacSystemFont",
+                mt: 2
               }}
               className="analyze-subtext"
             >
