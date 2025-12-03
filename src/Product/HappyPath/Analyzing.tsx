@@ -189,7 +189,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              max_tweets: 100,
+              max_tweets: null,
               save_to_firebase: true
             }),
           }
