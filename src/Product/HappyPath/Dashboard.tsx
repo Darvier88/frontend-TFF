@@ -49,7 +49,7 @@ const getApiUrl = () => {
   
   const defaultUrl = isLocalhost 
     ? 'http://localhost:8080' 
-    : 'https://x-gpt-jet.vercel.app';
+    : 'https://tff-bgchecker.vercel.app';
   
   console.log('🌐 [Auto-detect] API URL:', defaultUrl);
   return defaultUrl;
@@ -123,26 +123,47 @@ const Dashboard: React.FC = () => {
       ),
     [riskItems]
   );
-
+const getAuthParams = (): string => {
+  const token = sessionStorage.getItem("access_token");
+  const sessionId = sessionStorage.getItem("session_id");
+  
+  if (token) {
+    console.log("🔑 Using token for authentication");
+    return `token=${encodeURIComponent(token)}`;
+  } else if (sessionId) {
+    console.log("🔑 Using session_id for authentication");
+    return `session_id=${encodeURIComponent(sessionId)}`;
+  } else {
+    throw new Error("No authentication method available");
+  }
+};
   const isCleanAccount =
     !loading && !error && riskItems.length > 0 && !hasAnyRiskTweet;
   const loadDataFromUrl = async (
   tweetsId: string, 
   classificationId: string, 
-  usernameParam: string | null
+  usernameParam: string | null,
+  token: string | null  // ← NUEVO parámetro
 ) => {
   try {
     console.log("🔗 Loading data from URL parameters...");
     console.log("   Tweets ID:", tweetsId);
     console.log("   Classification ID:", classificationId);
     console.log("   Username:", usernameParam);
+    console.log("   Token:", token ? token.substring(0, 16) + "..." : "None");  // ← NUEVO
     
-    // Guardar en sessionStorage para que el Dashboard funcione normalmente
+    // Guardar en sessionStorage
     sessionStorage.setItem("tweets_firebase_id", tweetsId);
     sessionStorage.setItem("classification_firebase_id", classificationId);
     
     if (usernameParam) {
       sessionStorage.setItem("username", usernameParam);
+    }
+    
+    // ✅ GUARDAR EL TOKEN si existe
+    if (token) {
+      sessionStorage.setItem("access_token", token);  // ← NUEVO
+      console.log("🔑 Token saved to sessionStorage");
     }
     
     // Crear un pseudo session_id (no es necesario para autenticación)
@@ -151,12 +172,12 @@ const Dashboard: React.FC = () => {
     
     console.log("💾 Data saved to sessionStorage");
     
-    // Limpiar los parámetros de la URL (opcional, para que se vea más limpio)
+    // Limpiar los parámetros de la URL
     window.history.replaceState({}, document.title, "/dashboard");
     
     console.log("✅ URL parameters processed, reloading page...");
     
-    // Forzar recarga para que el useEffect principal se ejecute con los nuevos datos
+    // Forzar recarga
     window.location.reload();
     
   } catch (error) {
@@ -176,10 +197,11 @@ const Dashboard: React.FC = () => {
   const tweetsId = urlParams.get('tweets_id');
   const classificationId = urlParams.get('classification_id');
   const usernameParam = urlParams.get('username');
+  const token = urlParams.get('token');  // ← NUEVO
   
   if (tweetsId && classificationId) {
     console.log("🔗 Firebase IDs detected in URL, loading data...");
-    loadDataFromUrl(tweetsId, classificationId, usernameParam);
+    loadDataFromUrl(tweetsId, classificationId, usernameParam, token);  // ← PASAR TOKEN
   }
 }, []);
 
@@ -286,31 +308,30 @@ const Dashboard: React.FC = () => {
     setDeletionProgress("Preparing deletion...");
 
     try {
-      // Obtener datos de sesión
-      const sessionId = sessionStorage.getItem("session_id");
       const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
 
       console.log("🗑️ Starting deletion process...");
-      console.log("   Session ID:", sessionId);
       console.log("   Firebase Doc ID:", tweetsDocId);
       console.log("   Selected tweets:", selectedIds.size);
 
-      if (!sessionId || !tweetsDocId) {
-        throw new Error("Missing session data. Please login again.");
+      if (!tweetsDocId) {
+        throw new Error("Missing Firebase document ID. Please try again.");
       }
 
-      // ✅ FIX: Convertir selectedIds a string separado por comas
+      // Obtener parámetros de autenticación (token o session_id)
+      const authParams = getAuthParams();
+
+      // ✅ Convertir selectedIds a string separado por comas
       const tweetIdsString = Array.from(selectedIds).join(',');
       console.log("   Tweet IDs to delete:", tweetIdsString);
 
       setDeletionProgress(`Deleting ${selectedIds.size} tweets from Twitter...`);
 
-      // Llamar al endpoint de eliminación (OPCIÓN A: Twitter + Firebase)
-      // ✅ FIX: Agregar tweet_ids como parámetro
+      // Llamar al endpoint con authParams dinámico
       const url = `${API_BASE_URL}/api/tweets/delete?` +
-        `session_id=${sessionId}&` +
+        `${authParams}&` +  // ← CAMBIADO: Ahora es dinámico (token o session_id)
         `firebase_doc_id=${tweetsDocId}&` +
-        `tweet_ids=${encodeURIComponent(tweetIdsString)}&` +  // ← NUEVO
+        `tweet_ids=${encodeURIComponent(tweetIdsString)}&` +
         `delete_retweets=true&` +
         `delete_originals=true&` +
         `delay_seconds=1.0&` +
@@ -457,23 +478,24 @@ const Dashboard: React.FC = () => {
     setDeletionProgress("Deleting tweet...");
 
     try {
-      const sessionId = sessionStorage.getItem("session_id");
       const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
 
       console.log("🗑️ Starting single tweet deletion...");
       console.log("   Tweet ID:", tweetId);
 
-      if (!sessionId || !tweetsDocId) {
-        throw new Error("Missing session data. Please login again.");
+      if (!tweetsDocId) {
+        throw new Error("Missing Firebase document ID. Please try again.");
       }
+
+      // Obtener parámetros de autenticación
+      const authParams = getAuthParams();
 
       setDeletionProgress("Deleting tweet from Twitter...");
 
-      // ✅ FIX: Enviar solo el ID del tweet específico
       const url = `${API_BASE_URL}/api/tweets/delete?` +
-        `session_id=${sessionId}&` +
+        `${authParams}&` +  // ← CAMBIADO
         `firebase_doc_id=${tweetsDocId}&` +
-        `tweet_ids=${tweetId}&` +  // ← SOLO ESTE TWEET
+        `tweet_ids=${tweetId}&` +
         `delete_retweets=true&` +
         `delete_originals=true&` +
         `delay_seconds=1.0&` +
@@ -550,21 +572,23 @@ const Dashboard: React.FC = () => {
       setDeletionProgress("");
     }
   };
-  const sendAnalysisReadyEmail = async () => {
+const sendAnalysisReadyEmail = async () => {
   try {
-    const sessionId = sessionStorage.getItem("session_id");
     const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
     const classificationDocId = sessionStorage.getItem("classification_firebase_id");
 
-    if (!sessionId || !tweetsDocId || !classificationDocId) {
+    if (!tweetsDocId || !classificationDocId) {
       console.warn("⚠️ Missing data for email notification, skipping...");
       return;
     }
 
+    // Obtener parámetros de autenticación
+    const authParams = getAuthParams();
+
     console.log("📧 Checking if email needs to be sent...");
 
     const url = `${API_BASE_URL}/api/notifications/send-analysis-ready?` +
-      `session_id=${sessionId}&` +
+      `${authParams}&` +  // ← CAMBIADO
       `tweets_firebase_id=${tweetsDocId}&` +
       `classification_firebase_id=${classificationDocId}`;
 
@@ -601,30 +625,39 @@ const Dashboard: React.FC = () => {
     try {
       console.log("🔥 Loading data from Firebase...");
 
-      const sessionId = sessionStorage.getItem("session_id");
-      const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
-      const classificationDocId = sessionStorage.getItem("classification_firebase_id");
-      const storedUsername = sessionStorage.getItem("username");
+      // ✅ DESPUÉS:
+    const sessionId = sessionStorage.getItem("session_id");
+    const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+    const classificationDocId = sessionStorage.getItem("classification_firebase_id");
+    const storedUsername = sessionStorage.getItem("username");
 
-      console.log("📋 SessionStorage values:", {
-        sessionId,
-        tweetsDocId,
-        classificationDocId,
-        storedUsername
-      });
+    console.log("📋 SessionStorage values:", {
+      tweetsDocId,
+      classificationDocId,
+      storedUsername
+    });
 
-      // Validar que tenemos los datos necesarios
-      if (!sessionId) {
-        throw new Error("No session ID found. Please login again.");
-      }
+    // Validar que tenemos los datos necesarios
+    if (!tweetsDocId || !classificationDocId) {
+      throw new Error("No Firebase document IDs found. Please analyze your account first.");
+    }
 
-      if (!tweetsDocId || !classificationDocId) {
-        throw new Error("No Firebase document IDs found. Please analyze your account first.");
-      }
+    // Obtener parámetros de autenticación (opcional para este endpoint)
+    let authParams = "";
+    try {
+      authParams = getAuthParams();
+    } catch (e) {
+      console.warn("⚠️ No authentication available, proceeding without it");
+      authParams = ""; // Permitir acceso sin auth para este endpoint
+    }
 
-      // Llamar al endpoint para obtener datos de Firebase
-      const url = `${API_BASE_URL}/api/firebase/get-data?session_id=${sessionId}&tweets_doc_id=${tweetsDocId}&classification_doc_id=${classificationDocId}`;
-      console.log("🌐 Calling URL:", url);
+    // Llamar al endpoint
+    const url = `${API_BASE_URL}/api/firebase/get-data?` +
+      (authParams ? `${authParams}&` : "") +  // ← Solo si existe
+      `tweets_doc_id=${tweetsDocId}&` +
+      `classification_doc_id=${classificationDocId}`;
+
+    console.log("🌐 Calling URL:", url);
 
       const response = await fetch(url, {
         method: "GET",
