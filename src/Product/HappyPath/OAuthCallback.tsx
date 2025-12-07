@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
 const getApiUrl = () => {
-  // 1. Permitir override con query parameter ?api=local
   const urlParams = new URLSearchParams(window.location.search);
   const apiOverride = urlParams.get('api');
   
@@ -17,14 +16,12 @@ const getApiUrl = () => {
     return 'https://x-gpt-jet.vercel.app';
   }
   
-  // 2. Variable de entorno
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl) {
     console.log('🌐 [Config] Using VITE_API_URL:', envUrl);
     return envUrl.replace(/\/$/, '');
   }
   
-  // 3. Auto-detect
   const isLocalhost = window.location.hostname === 'localhost' || 
                       window.location.hostname === '127.0.0.1';
   
@@ -37,6 +34,7 @@ const getApiUrl = () => {
 };
 
 const API_BASE_URL = getApiUrl();
+
 export default function OAuthCallback() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -46,12 +44,10 @@ export default function OAuthCallback() {
   useEffect(() => {
     const processCallback = async () => {
       try {
-        // Obtener parámetros de la URL
         const sessionId = searchParams.get("session_id");
         const username = searchParams.get("username");
         const error = searchParams.get("error");
 
-        // Si hay error
         if (error) {
           setStatus("error");
           setErrorMessage(`Error de autenticación: ${error}`);
@@ -59,7 +55,6 @@ export default function OAuthCallback() {
           return;
         }
 
-        // Si no hay session_id
         if (!sessionId) {
           setStatus("error");
           setErrorMessage("No se recibió el session ID");
@@ -67,43 +62,54 @@ export default function OAuthCallback() {
           return;
         }
 
-        // ✅ Guardar en sessionStorage (no localStorage)
         sessionStorage.setItem("session_id", sessionId);
         if (username) {
           sessionStorage.setItem("username", `@${username}`);
         }
 
-        // Obtener datos completos del usuario desde el backend
+        // ✅ MODIFICADO: Obtener datos completos del usuario
         try {
           const response = await fetch(`${API_BASE_URL}/api/auth/me?session_id=${sessionId}`);
           
           if (response.ok) {
             const data = await response.json();
             
-            // Guardar tweet_count en sessionStorage
-            if (data.user && data.user.tweet_count !== undefined) {
-              sessionStorage.setItem("tweet_count", data.user.tweet_count.toString());
-            }
+            console.log("📊 User data received:", data.user);
             
-            // Opcional: guardar otros datos si los necesitas
             if (data.user) {
+              // Guardar datos básicos
               sessionStorage.setItem("user_id", data.user.id || "");
               sessionStorage.setItem("user_name", data.user.name || "");
+              sessionStorage.setItem("tweet_count", (data.user.tweet_count || 0).toString());
               sessionStorage.setItem("followers_count", (data.user.followers_count || 0).toString());
+              
+              // ✅ NUEVO: Guardar estado de cuenta privada
+              const isProtected = data.user.protected || false;
+              sessionStorage.setItem("is_protected", isProtected.toString());
+              
+              console.log(`🔒 Account protected status: ${isProtected}`);
+              
+              // ✅ NUEVO: Si la cuenta es privada, redirigir a pantalla de aviso
+              if (isProtected) {
+                console.log("⚠️ Private account detected, redirecting to warning page");
+                setStatus("success");
+                setTimeout(() => {
+                  navigate("/account-private");
+                }, 1000);
+                return;
+              }
             }
           }
         } catch (err) {
           console.error("Error obteniendo datos del usuario:", err);
-          // No falla el flujo si no se pueden obtener los datos adicionales
         }
 
-        // ✅ Limpiar datos temporales de sessionStorage
         sessionStorage.removeItem("temp_session_id");
         sessionStorage.removeItem("oauth_state");
 
         setStatus("success");
 
-        // Redirigir a analyzing después de 1 segundo
+        // ✅ Solo llega aquí si la cuenta NO es privada
         setTimeout(() => {
           navigate("/analyzing");
         }, 1000);
