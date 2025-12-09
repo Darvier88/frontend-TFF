@@ -1,6 +1,8 @@
+// src/Product/HappyPath/OAuthCallback.tsx (traducido)
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const getApiUrl = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -36,6 +38,7 @@ const getApiUrl = () => {
 const API_BASE_URL = getApiUrl();
 
 export default function OAuthCallback() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
@@ -50,7 +53,7 @@ export default function OAuthCallback() {
 
         if (error) {
           setStatus("error");
-          setErrorMessage(`Error de autenticación: ${error}`);
+          setErrorMessage(`${t('oauth.error')}: ${error}`);
           setTimeout(() => navigate("/connect"), 3000);
           return;
         }
@@ -67,7 +70,6 @@ export default function OAuthCallback() {
           sessionStorage.setItem("username", `@${username}`);
         }
 
-        // ✅ MODIFICADO: Obtener datos completos del usuario
         try {
           const response = await fetch(`${API_BASE_URL}/api/auth/me?session_id=${sessionId}`);
           
@@ -77,19 +79,16 @@ export default function OAuthCallback() {
             console.log("📊 User data received:", data.user);
             
             if (data.user) {
-              // Guardar datos básicos
               sessionStorage.setItem("user_id", data.user.id || "");
               sessionStorage.setItem("user_name", data.user.name || "");
               sessionStorage.setItem("tweet_count", (data.user.tweet_count || 0).toString());
               sessionStorage.setItem("followers_count", (data.user.followers_count || 0).toString());
               
-              // ✅ NUEVO: Guardar estado de cuenta privada
               const isProtected = data.user.protected || false;
               sessionStorage.setItem("is_protected", isProtected.toString());
               
               console.log(`🔒 Account protected status: ${isProtected}`);
               
-              // ✅ NUEVO: Si la cuenta es privada, redirigir a pantalla de aviso
               if (isProtected) {
                 console.log("⚠️ Private account detected, redirecting to warning page");
                 setStatus("success");
@@ -109,7 +108,6 @@ export default function OAuthCallback() {
 
         setStatus("success");
 
-        // ✅ Solo llega aquí si la cuenta NO es privada
         setTimeout(() => {
           navigate("/analyzing");
         }, 1000);
@@ -122,7 +120,7 @@ export default function OAuthCallback() {
     };
 
     processCallback();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, t]);
 
   return (
     <Box
@@ -150,10 +148,10 @@ export default function OAuthCallback() {
           <>
             <CircularProgress size={60} sx={{ mb: 3 }} />
             <Typography variant="h6" sx={{ fontFamily: "Inter, sans-serif", mb: 1 }}>
-              Procesando autenticación...
+              {t('oauth.processing')}
             </Typography>
             <Typography sx={{ fontSize: 14, color: "text.secondary", fontFamily: "Inter, sans-serif" }}>
-              Por favor espera un momento
+              {t('oauth.wait')}
             </Typography>
           </>
         )}
@@ -176,10 +174,10 @@ export default function OAuthCallback() {
               <Typography sx={{ fontSize: 40, color: "white" }}>✓</Typography>
             </Box>
             <Typography variant="h6" sx={{ fontFamily: "Inter, sans-serif", mb: 1 }}>
-              ¡Autenticación exitosa!
+              {t('oauth.success')}
             </Typography>
             <Typography sx={{ fontSize: 14, color: "text.secondary", fontFamily: "Inter, sans-serif" }}>
-              Redirigiendo...
+              {t('oauth.redirecting')}
             </Typography>
           </>
         )}
@@ -202,13 +200,13 @@ export default function OAuthCallback() {
               <Typography sx={{ fontSize: 40, color: "white" }}>✕</Typography>
             </Box>
             <Typography variant="h6" sx={{ fontFamily: "Inter, sans-serif", mb: 1 }}>
-              Error de autenticación
+              {t('oauth.error')}
             </Typography>
             <Typography sx={{ fontSize: 14, color: "text.secondary", fontFamily: "Inter, sans-serif" }}>
               {errorMessage}
             </Typography>
             <Typography sx={{ fontSize: 12, color: "text.secondary", fontFamily: "Inter, sans-serif", mt: 2 }}>
-              Redirigiendo al inicio...
+              {t('oauth.redirectingHome')}
             </Typography>
           </>
         )}

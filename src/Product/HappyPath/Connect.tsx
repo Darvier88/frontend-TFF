@@ -1,11 +1,13 @@
+// src/Product/HappyPath/Connect.tsx (con traducciones)
 import { Box, Button, Paper, Stack, Typography, CircularProgress } from "@mui/material";
 import { useState } from "react";
+import { useLanguage } from "../../contexts/LanguageContext";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 import logoUrl from "../../assets/tff_logo.svg";
 import xLogo from "../../assets/x-logo.png";
 
 const getApiUrl = () => {
-  // 1. Permitir override con query parameter ?api=local
   const urlParams = new URLSearchParams(window.location.search);
   const apiOverride = urlParams.get('api');
   
@@ -19,14 +21,12 @@ const getApiUrl = () => {
     return 'https://x-gpt-jet.vercel.app';
   }
   
-  // 2. Variable de entorno
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl) {
     console.log('🌐 [Config] Using VITE_API_URL:', envUrl);
     return envUrl.replace(/\/$/, '');
   }
   
-  // 3. Auto-detect
   const isLocalhost = window.location.hostname === 'localhost' || 
                       window.location.hostname === '127.0.0.1';
   
@@ -41,6 +41,7 @@ const getApiUrl = () => {
 const API_BASE_URL = getApiUrl();
 
 export default function Connect() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +50,6 @@ export default function Connect() {
       setLoading(true);
       setError(null);
 
-      // Llamar al endpoint de login
       const response = await fetch(`${API_BASE_URL}/api/auth/login`);
       
       if (!response.ok) {
@@ -58,11 +58,9 @@ export default function Connect() {
 
       const data = await response.json();
 
-      // Guardar el session_id en localStorage temporalmente (opcional, por si lo necesitas después)
       localStorage.setItem("temp_session_id", data.session_id);
       localStorage.setItem("oauth_state", data.state);
 
-      // Redirigir al usuario a Twitter para autorizar
       window.location.href = data.authorization_url;
 
     } catch (err) {
@@ -104,15 +102,19 @@ export default function Connect() {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "right",
+            justifyContent: "space-between",
             mb: 4,
           }}
         >
+          {/* Botón de idioma a la izquierda */}
+          <LanguageSwitcher />
+
+          {/* Logo a la derecha */}
           <Stack direction="row" spacing={1} alignItems="center">
             <Box
               component="img"
               src={logoUrl}
-              alt="AI Checker logo"
+              alt={t('header.logoAlt')}
               sx={{
                 width: 16.5,
                 height: 25.5,
@@ -124,8 +126,7 @@ export default function Connect() {
             <Typography
               sx={{
                 fontSize: 14,
-                fontFamily:
-                  "Inter, system-ui, -apple-system, BlinkMacSystemFont",
+                fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont",
                 fontWeight: 600,
               }}
               className="product-logo-label"
@@ -184,7 +185,7 @@ export default function Connect() {
               }}
               className="connect-title"
             >
-              Connect Your Account
+              {t('connect.title')}
             </Typography>
 
             <Typography
@@ -199,8 +200,7 @@ export default function Connect() {
               }}
               className="connect-subtitle"
             >
-              Analyze your Twitter/X history to identify and manage potentially
-              problematic content
+              {t('connect.subtitle')}
             </Typography>
 
             <Typography
@@ -212,7 +212,7 @@ export default function Connect() {
               }}
               className="connect-subtitle"
             >
-              Secure • Private • Read-only access
+              {t('connect.security')}
             </Typography>
 
             {error && (
@@ -251,7 +251,7 @@ export default function Connect() {
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                "Connect Account"
+                t('connect.button')
               )}
             </Button>
           </Paper>
@@ -260,4 +260,3 @@ export default function Connect() {
     </Box>
   );
 }
-

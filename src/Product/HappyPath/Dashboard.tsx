@@ -12,6 +12,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import FiltersSidebar from "../components/FiltersSidebar";
 import ActionPanelWithTweets from "../components/ActionPanelWithTweets";
 import CleanAccountOverlay from "../components/CleanAccountOverlay";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 import {
   type RiskItem,
@@ -60,6 +61,7 @@ const API_BASE_URL = getApiUrl();
 console.log("🌐 API_BASE_URL:", API_BASE_URL);
 
 const Dashboard: React.FC = () => {
+  const { t } = useLanguage();
   const FIXED_CONTENT_LABELS: string[] = [
     "Political sensitive",
     "Offensive",
@@ -291,7 +293,7 @@ const getAuthParams = (): string => {
 
   const handleDeleteFromTwitterAndFirebase = async () => {
     if (selectedIds.size === 0) {
-      alert("No tweets selected");
+      alert(t('delete.noSelection'));
       return;
     }
 
@@ -300,22 +302,23 @@ const getAuthParams = (): string => {
       const minutes = Math.floor(rateLimitRetryAfter / 60);
       const seconds = rateLimitRetryAfter % 60;
       const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
-      alert(`⏳ Please wait ${timeStr} before trying again`);
+      alert(`⏳ ${t('delete.wait')} ${timeStr} ${t('delete.beforeRetry')}`);
       return;
     }
 
     setIsDeleting(true);
-    setDeletionProgress("Preparing deletion...");
+    setDeletionProgress(t('delete.preparing'));
 
     try {
-      const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
+      const tweetsDocId
+       = sessionStorage.getItem("tweets_firebase_id");
 
       console.log("🗑️ Starting deletion process...");
       console.log("   Firebase Doc ID:", tweetsDocId);
       console.log("   Selected tweets:", selectedIds.size);
 
       if (!tweetsDocId) {
-        throw new Error("Missing Firebase document ID. Please try again.");
+        throw new Error(t('modal.missingFirebaseId'));
       }
 
       // Obtener parámetros de autenticación (token o session_id)
@@ -325,7 +328,7 @@ const getAuthParams = (): string => {
       const tweetIdsString = Array.from(selectedIds).join(',');
       console.log("   Tweet IDs to delete:", tweetIdsString);
 
-      setDeletionProgress(`Deleting ${selectedIds.size} tweets from Twitter...`);
+      setDeletionProgress(`${t('delete.deleting')} ${selectedIds.size} tweets...`);
 
       // Llamar al endpoint con authParams dinámico
       const url = `${API_BASE_URL}/api/tweets/delete?` +
@@ -359,9 +362,9 @@ const getAuthParams = (): string => {
         const timeFormatted = errorData.detail?.retry_after_formatted || `${retryAfter}s`;
         
         alert(
-          `⏳ Too many requests\n\n` +
-          `Please wait ${timeFormatted} before trying again.\n\n` +
-          `A countdown timer will appear.`
+          `⏳ ${t('delete.rateLimit')}\n\n` +
+          `${t('delete.wait')} ${timeFormatted} ${t('delete.beforeRetry')}\n\n` +
+          `${t('delete.countdown')}`
         );
         
         setIsDeleting(false);
@@ -387,7 +390,7 @@ const getAuthParams = (): string => {
       console.log(`   ✅ Successfully deleted: ${totalDeleted}`);
       console.log(`   ❌ Failed: ${failed.length}`);
 
-      setDeletionProgress("Updating display...");
+      setDeletionProgress(t('delete.display'));
 
       // Actualizar UI: remover tweets eliminados exitosamente
       if (failed.length > 0) {
@@ -401,11 +404,13 @@ const getAuthParams = (): string => {
         );
 
         alert(
-          `⚠️ Partial deletion:\n` +
-          `✅ ${totalDeleted} tweets permanently deleted from Twitter & Firebase\n` +
-          `❌ ${failed.length} tweets failed to delete\n\n` +
-          `The failed tweets remain in your view.`
-        );
+          `⚠️ ${t('delete.partial')}:\n` +
+          `✅ ${totalDeleted} ${t('delete.successMsg')}\n` +
+          `${t('delete.twitter')}\n` +
+          `${t('delete.firebase')}\n` +
+          `❌ ${failed.length} ${t('delete.failed')}\n\n` +
+          `${t('delete.failedRemain')}`
+        )
       } else {
         // Todo exitoso: remover todos los seleccionados
           setRiskItems((prev) =>
@@ -413,12 +418,12 @@ const getAuthParams = (): string => {
           );
 
           alert(
-            `✅ Success!\n\n` +
-            `${totalDeleted} tweets permanently deleted from:\n` +
-            `• Twitter/X\n` +
-            `• Firebase Database\n\n` +
-            `This action cannot be undone.`
-          );
+          `✅ ${t('delete.success')}\n\n` +
+          `${totalDeleted} ${t('delete.successMsg')}\n` +
+          `${t('delete.twitter')}\n` +
+          `${t('delete.firebase')}\n\n` +
+          `${t('delete.cannotUndo')}`
+        );
           
           // 🆕 FORZAR RECARGA DE DATOS ACTUALIZADOS DESDE FIREBASE
           console.log("🔄 Reloading updated data from Firebase...");
@@ -429,10 +434,7 @@ const getAuthParams = (): string => {
           setDeletionProgress("");
           setIsDeleting(false);
           
-          // Esperar 1 segundo para que Firebase termine de actualizarse
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+          
           
           // IMPORTANTE: Salir de la función para evitar que el código de abajo se ejecute
           return;
@@ -451,12 +453,12 @@ const getAuthParams = (): string => {
       
       const errorMessage = error instanceof Error 
         ? error.message 
-        : "Unknown error occurred";
+        : t("modal.unknownError");
 
       alert(
-        `❌ Error deleting tweets:\n\n` +
+        `❌ ${t('delete.error')}:\n\n` +
         `${errorMessage}\n\n` +
-        `Please try again or contact support.`
+        `${t('delete.tryAgain')}`
       );
 
       setIsDeleting(false);
@@ -470,12 +472,12 @@ const getAuthParams = (): string => {
       const minutes = Math.floor(rateLimitRetryAfter / 60);
       const seconds = rateLimitRetryAfter % 60;
       const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
-      alert(`⏳ Please wait ${timeStr} before trying again`);
+      `${t('delete.wait')} ${timeStr} ${t('delete.beforeRetry')}\n\n`;
       return;
     }
 
     setIsDeleting(true);
-    setDeletionProgress("Deleting tweet...");
+    setDeletionProgress(`${t('delete.deleting')} tweet...`);
 
     try {
       const tweetsDocId = sessionStorage.getItem("tweets_firebase_id");
@@ -484,13 +486,13 @@ const getAuthParams = (): string => {
       console.log("   Tweet ID:", tweetId);
 
       if (!tweetsDocId) {
-        throw new Error("Missing Firebase document ID. Please try again.");
+        throw new Error(t('modal.missingFirebaseId'));
       }
 
       // Obtener parámetros de autenticación
       const authParams = getAuthParams();
 
-      setDeletionProgress("Deleting tweet from Twitter...");
+      setDeletionProgress(t('delete.fromTwitter'));
 
       const url = `${API_BASE_URL}/api/tweets/delete?` +
         `${authParams}&` +  // ← CAMBIADO
@@ -515,7 +517,7 @@ const getAuthParams = (): string => {
         setRateLimitRetryAfter(retryAfter);
         
         const timeFormatted = errorData.detail?.retry_after_formatted || `${retryAfter}s`;
-        alert(`⏳ Too many requests. Please wait ${timeFormatted}`);
+        alert(`⏳ ${(t('delete.rateLimit'))}. ${t('delete.wait')} ${timeFormatted}`);
         
         setIsDeleting(false);
         setDeletionProgress("");
@@ -524,7 +526,7 @@ const getAuthParams = (): string => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to delete tweet");
+        throw new Error(errorData.detail || t('delete.failed2'));
       }
 
       const result = await response.json();
@@ -539,21 +541,20 @@ const getAuthParams = (): string => {
           prev.filter((item) => item.tweet_id !== tweetId)
         );
 
-        alert("✅ Tweet permanently deleted from Twitter & Firebase");
+        alert(`✅ ${(t('delete.successMsg2'))}`);
         
         // 🆕 FORZAR RECARGA
         console.log("🔄 Reloading updated data from Firebase...");
         setDeletionProgress("");
         setIsDeleting(false);
         
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        
+        
         
         return;
       } else {
         // Falló
-        alert("❌ Failed to delete tweet. Please try again.");
+        alert(`✅ ${(t('delete.failed2'))}`);
       }
 
       setDeletionProgress("");
@@ -564,9 +565,9 @@ const getAuthParams = (): string => {
       
       const errorMessage = error instanceof Error 
         ? error.message 
-        : "Unknown error occurred";
+        : t("modal.unknownError");
 
-      alert(`❌ Error deleting tweet:\n\n${errorMessage}`);
+      alert(`❌ ${t('delete.error')}:\n\n${errorMessage}`);
 
       setIsDeleting(false);
       setDeletionProgress("");
@@ -639,7 +640,7 @@ const sendAnalysisReadyEmail = async () => {
 
     // Validar que tenemos los datos necesarios
     if (!tweetsDocId || !classificationDocId) {
-      throw new Error("No Firebase document IDs found. Please analyze your account first.");
+      throw new Error(t('modal.noFirebase'));
     }
 
     // Obtener parámetros de autenticación (opcional para este endpoint)
@@ -985,7 +986,7 @@ const sendAnalysisReadyEmail = async () => {
           >
             <CircularProgress />
             <Typography sx={{ color: "#666", fontSize: 14 }}>
-              Loading your data from Firebase...
+              {t('dashboard.loading')}
             </Typography>
           </Box>
         </Paper>
@@ -1035,7 +1036,7 @@ const sendAnalysisReadyEmail = async () => {
             }}
           >
             <Typography color="error" sx={{ fontSize: 18, fontWeight: 600 }}>
-              Error Loading Data
+              {t('dashboard.errorLoading')}
             </Typography>
             <Typography color="error" sx={{ fontSize: 14 }}>
               {error}
@@ -1049,7 +1050,7 @@ const sendAnalysisReadyEmail = async () => {
                 "&:hover": { bgcolor: "#333" }
               }}
             >
-              Go Back
+              {t('dashboard.goBack')}
             </Button>
           </Box>
         </Paper>
@@ -1130,7 +1131,7 @@ const sendAnalysisReadyEmail = async () => {
                     }}
                     className="title-nothing"
                   >
-                    Nothing to Check Here
+                    {t('message.noData')}
                   </Typography>
 
                   <Typography
@@ -1140,8 +1141,7 @@ const sendAnalysisReadyEmail = async () => {
                     }}
                     className="removed-text"
                   >
-                    We couldn&apos;t find any posts or reposts on your
-                    connected account.
+                    {t('message.noDataDesc')}
                   </Typography>
 
                   <Box sx={{ mb: 4 }}>
@@ -1154,7 +1154,7 @@ const sendAnalysisReadyEmail = async () => {
                       }}
                       className="removed-text"
                     >
-                      This could mean:
+                      {t('message.reasons')}
                     </Typography>
                     <ul
                       style={{
@@ -1162,8 +1162,8 @@ const sendAnalysisReadyEmail = async () => {
                       }}
                       className="removed-bullets removed-text"
                     >
-                      <li>Your account is brand new</li>
-                      <li>You&apos;ve already deleted all previous posts</li>
+                      <li>{t('message.newAccount')}</li>
+                      <li>{t('message.deletedAll')}</li>
                     </ul>
                   </Box>
 

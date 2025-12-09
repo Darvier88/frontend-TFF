@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon from "@mui/icons-material/Close";
-
+import { useLanguage } from "../../contexts/LanguageContext";
 import logoUrl from "../../assets/tff_logo.svg";
 
 interface AnalyzingProps {
@@ -77,6 +77,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
   totalPosts = 100,
   etaHours = 1,
 }) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const [step] = React.useState(3);
@@ -232,7 +233,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              max_tweets: null,
+              max_tweets: 20,
               save_to_firebase: true,
             }),
           }
@@ -451,7 +452,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               }}
               className="analyze-placeholder"
             >
-              Analyzing your posts
+              {t('analyzing.title')}
             </Typography>
 
             <Typography
@@ -464,11 +465,11 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               }}
               className="analyze-subtext"
             >
-              You got{" "}
+              {t('analyzing.got')}{" "}
               <Box component="span" sx={{ fontWeight: 600 }}>
-                {resolvedTotalPosts.toLocaleString()} posts
+                {resolvedTotalPosts.toLocaleString()} {t('analyzing.posts')}
               </Box>
-              . Estimated analysis time:{" "}
+              . {t('analyzing.estimatedTime')}{" "}
               {isCalculating ? (
                 <Box
                   component="span"
@@ -480,7 +481,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                 >
                   <CircularProgress size={14} sx={{ color: "#4A5565" }} />
                   <Box component="span" sx={{ fontStyle: "italic" }}>
-                    calculating...
+                    {t('analyzing.calculating')}
                   </Box>
                 </Box>
               ) : (
@@ -501,11 +502,11 @@ const Analyzing: React.FC<AnalyzingProps> = ({
               }}
               className="analyze-subtext"
             >
-              We will notify you when the report is ready{" "}
+              {t('analyzing.notification')}{" "}
               <Box component="span" sx={{ fontWeight: 600 }}>
-                via email
+                {t('analyzing.viaEmail')}
               </Box>{" "}
-              ✉️. You can close this tab.
+              {t('analyzing.canClose')}
             </Typography>
           </Stack>
 
@@ -647,14 +648,13 @@ const Analyzing: React.FC<AnalyzingProps> = ({
           }}
           className="email-notice"
         >
-          (Your account email is xxxxxx@gmail.com. If you&apos;d like to change
-          the email we notify when the dashboard is ready,{" "}
+          ({t('analyzing.emailNotice')},{" "}
           <a
             href="#"
             className="email-set-link"
             onClick={handleOpenEmailModal}
           >
-            click here
+            {t('analyzing.clickHere')}
           </a>
           .)
         </Box>
@@ -696,7 +696,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                   }}
                   className="modal-email-title"
                 >
-                  Email notifications
+                  {t('modal.title')}
                 </Typography>
 
                 <form onSubmit={handleSubmitEmail}>
@@ -711,7 +711,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                         }}
                         className="modal-email-text"
                       >
-                        Add a new email for your notifications
+                        {t('modal.addEmail')}
                       </Typography>
                       <input
                         type="email"
@@ -734,7 +734,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                         }}
                         className="modal-email-text"
                       >
-                        Confirm the email
+                        {t('modal.confirmEmail')}
                       </Typography>
                       <input
                         type="email"
@@ -775,7 +775,7 @@ const Analyzing: React.FC<AnalyzingProps> = ({
                       }}
                       className="button-box button-text"
                     >
-                      Continue
+                      {t('modal.continue')}
                     </Button>
                   </Stack>
                 </form>

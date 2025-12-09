@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import LockIcon from "@mui/icons-material/Lock";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import LanguageSwitcher from "../components/LanguageSwitcher"
+import { useLanguage } from "../../contexts/LanguageContext";
 
 import logoUrl from "../../assets/tff_logo.svg";
 
 export default function AccountPrivate() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleGoBack = () => {
@@ -44,6 +47,9 @@ export default function AccountPrivate() {
             mb: 4,
           }}
         >
+        <Box sx={{ position: 'absolute', top: 20, left: 20 }}>
+        <LanguageSwitcher />
+        </Box>
           <Stack direction="row" spacing={1} alignItems="center">
             <Box
               component="img"
@@ -144,7 +150,7 @@ export default function AccountPrivate() {
                 zIndex: 1,
               }}
             >
-              Private Account Detected
+              {t('private.title')}
             </Typography>
 
             <Typography
@@ -158,7 +164,7 @@ export default function AccountPrivate() {
                 zIndex: 1,
               }}
             >
-              We can't analyze {username} because it's set to private
+              {t('private.subtitle').replace('{username}', username)}
             </Typography>
           </Box>
 
@@ -175,7 +181,7 @@ export default function AccountPrivate() {
                   color: "#0F172A",
                 }}
               >
-                🔒 Why This Matters
+                {t('private.whyMatters')}
               </Typography>
 
               <Stack spacing={2.5}>
@@ -196,8 +202,7 @@ export default function AccountPrivate() {
                       lineHeight: 1.7,
                     }}
                   >
-                    <strong>Private accounts restrict API access</strong> to your tweets, 
-                    making it impossible for our tool to retrieve your content
+                    {t('private.reason1')}
                   </Typography>
                 </Box>
 
@@ -218,8 +223,7 @@ export default function AccountPrivate() {
                       lineHeight: 1.7,
                     }}
                   >
-                    Even with your authorization, <strong>Twitter/X's privacy settings</strong> prevent 
-                    third-party apps from accessing protected tweets
+                    {t('private.reason2')}
                   </Typography>
                 </Box>
 
@@ -240,8 +244,7 @@ export default function AccountPrivate() {
                       lineHeight: 1.7,
                     }}
                   >
-                    You can <strong>temporarily make your account public</strong>, run the analysis, 
-                    then switch it back to private
+                    {t('private.reason3')}
                   </Typography>
                 </Box>
               </Stack>
@@ -261,15 +264,15 @@ export default function AccountPrivate() {
                   color: "#0F172A",
                 }}
               >
-                📋 How to Make Your Account Public
+                {t('private.howTo')}
               </Typography>
 
               <Stack spacing={2.5}>
                 {[
-                  { num: "1", text: "Go to Twitter/X Settings", bold: "Settings" },
-                  { num: "2", text: "Navigate to Privacy and Safety", bold: "Privacy and Safety" },
-                  { num: "3", text: 'Uncheck "Protect your posts"', bold: '"Protect your posts"' },
-                  { num: "4", text: "Come back and reconnect your account", bold: "reconnect" },
+                  { num: "1", text: t('private.step1'), bold: "Settings" },
+                  { num: "2", text: t('private.step2'), bold: "Privacy and Safety" },
+                  { num: "3", text: t('private.step3'), bold: '"Protect your posts"' },
+                  { num: "4", text: t('private.step4'), bold: "reconnect" },
                 ].map((step) => (
                   <Box
                     key={step.num}
@@ -335,8 +338,7 @@ export default function AccountPrivate() {
                     lineHeight: 1.6,
                   }}
                 >
-                  <strong>Privacy Tip:</strong> You can make your account private again 
-                  immediately after the analysis is complete. Your data stays secure with us.
+                  {t('private.tip')}
                 </Typography>
               </Box>
             </Box>
@@ -363,7 +365,7 @@ export default function AccountPrivate() {
                 },
               }}
             >
-              Go Back to Connect
+              {t('private.button')}
             </Button>
 
             <Typography
@@ -375,7 +377,7 @@ export default function AccountPrivate() {
                 fontFamily: "Inter, sans-serif",
               }}
             >
-              Need help? Contact us at support@aichecker.com
+              {t('private.support')}
             </Typography>
           </Box>
         </Paper>
